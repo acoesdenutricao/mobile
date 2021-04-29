@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, View } from 'react-native';
+import { StyleSheet, SafeAreaView, View, TouchableHighlight, ScrollView} from 'react-native';
 import {Avatar, Text} from 'react-native-paper';
 import MaterialTabs from 'react-native-material-tabs';
+import { Col, Row, Grid } from "react-native-easy-grid";
 
 
 
@@ -10,6 +11,7 @@ export default function Home({navigation}){
 
     return(
         <View style={styles.container}>
+            {/* Menu principal */}
             <SafeAreaView>
                 <MaterialTabs
                 items={['Ações de Alimentação', 'Histórico']}
@@ -21,33 +23,230 @@ export default function Home({navigation}){
                 inactiveTextColor = '#3c9891' //verde oliva
                 />
             </SafeAreaView>
+
+            <ScrollView>
+            {/* Sujeito da abordagem */}
             <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
-            <View style={styles.grid}>
-                <View style={styles.buttonGrid}>
-                    <Avatar.Icon size={50} icon="account-outline" />
-                    <Text>Individuo</Text>
-                </View>
-                <View style={styles.buttonGrid}>
-                    <Avatar.Icon size={50} icon="account-group-outline" />
-                    <Text>Familia</Text>
-                </View>
-                <View style={styles.buttonGrid}>
-                    <Avatar.Icon size={50} icon="google-circles-communities" />
-                    <Text>Comunidade</Text>
-                </View>
-            </View>
+            <Grid style={styles.grid}>
+                <Col>
+                    <TouchableHighlight 
+                        style={styles.buttonGrid}
+                        activeOpacity={0.6}
+                        underlayColor="#3c9891"
+                        onPress={() => alert('Pressed!')}>
+                        <View style={{alignItems: 'center'}}>
+                            <Avatar.Icon size={50} icon="account-outline" />
+                            <Text>Indivíduo</Text>
+                        </View>
+                    </TouchableHighlight>
+                </Col>
+                <Col>
+                    <TouchableHighlight 
+                        style={styles.buttonGrid}
+                        activeOpacity={0.6}
+                        underlayColor="#3c9891"
+                        onPress={() => alert('Pressed!')}>
+                        <View style={{alignItems: 'center'}}>
+                            <Avatar.Icon size={50} icon="account-group-outline" />
+                            <Text>Família</Text>
+                        </View>
+                    </TouchableHighlight>
+                </Col>
+                <Col>
+                    <TouchableHighlight 
+                        style={styles.buttonGrid}
+                        activeOpacity={0.6}
+                        underlayColor="#3c9891"
+                        onPress={() => alert('Pressed!')}>
+                        <View style={{alignItems: 'center'}}>
+                            <Avatar.Icon size={50} icon="google-circles-communities" />
+                            <Text>Comunidade</Text>
+                        </View>
+                    </TouchableHighlight>
+                </Col>
+            </Grid>
+
+            {/* Nivel da abordagem  */}
+            <Text style={styles.gridTitle}>Selecionar o nível de intervenção</Text>
+            <Grid style={styles.grid}>
+                <Row>
+                    <Col>
+                        <TouchableHighlight 
+                            style={styles.buttonTextGrid}
+                            activeOpacity={0.6}
+                            underlayColor="#3c9891"
+                            onPress={() => alert('Pressed!')}>
+                            <View style={{alignItems: 'center'}}>
+                                <Text style={{textAlign: 'center'}}>Diagnóstico</Text>
+                            </View>
+                        </TouchableHighlight>
+                    </Col>
+                    <Col>
+                        <TouchableHighlight 
+                            style={styles.buttonTextGrid}
+                            activeOpacity={0.6}
+                            underlayColor="#3c9891"
+                            onPress={() => alert('Pressed!')}>
+                            <View style={{alignItems: 'center'}}>
+                                <Text style={{textAlign: 'center'}}>Promoção da Saúde</Text>
+                            </View>
+                        </TouchableHighlight>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <TouchableHighlight 
+                            style={styles.buttonTextGrid}
+                            activeOpacity={0.6}
+                            underlayColor="#3c9891"
+                            onPress={() => alert('Pressed!')}>
+                            <View style={{alignItems: 'center'}}>
+                                <Text style={{textAlign: 'center'}}>Prevenção de Doenças</Text>
+                            </View>
+                        </TouchableHighlight>
+                    </Col>
+                    <Col>
+                        <TouchableHighlight 
+                            style={styles.buttonTextGrid}
+                            activeOpacity={0.6}
+                            underlayColor="#3c9891"
+                            onPress={() => alert('Pressed!')}>
+                            <View style={{alignItems: 'center'}}>
+                                <Text style={{textAlign: 'center'}}>Assistencia, Tratamento e Cuidado</Text>
+                            </View>
+                        </TouchableHighlight>
+                    </Col>
+                </Row>
+            </Grid>
+
+            {/* Seleção da Ação  */}
+            <Text style={styles.gridTitle}>Selecionar Ação</Text>
+            <ScrollView>
+                <Grid style={styles.grid}>
+                    <Row>
+                        <Col>
+                            <TouchableHighlight 
+                                style={styles.buttonTextGrid}
+                                activeOpacity={0.6}
+                                underlayColor="#3c9891"
+                                onPress={() => alert('Pressed!')}>
+                                <View style={{alignItems: 'center'}}>
+                                    <Text style={{textAlign: 'center'}}>Ações Universais</Text>
+                                </View>
+                            </TouchableHighlight>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <TouchableHighlight 
+                                style={styles.buttonTextGrid}
+                                activeOpacity={0.6}
+                                underlayColor="#3c9891"
+                                onPress={() => alert('Pressed!')}>
+                                <View style={{alignItems: 'center'}}>
+                                    <Text style={{textAlign: 'center'}}>Gestantes</Text>
+                                </View>
+                            </TouchableHighlight>
+                        </Col>
+                        <Col>
+                            <TouchableHighlight 
+                                style={styles.buttonTextGrid}
+                                activeOpacity={0.6}
+                                underlayColor="#3c9891"
+                                onPress={() => alert('Pressed!')}>
+                                <View style={{alignItems: 'center'}}>
+                                    <Text style={{textAlign: 'center'}}>0-6 Meses</Text>
+                                </View>
+                            </TouchableHighlight>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <TouchableHighlight 
+                                style={styles.buttonTextGrid}
+                                activeOpacity={0.6}
+                                underlayColor="#3c9891"
+                                onPress={() => alert('Pressed!')}>
+                                <View style={{alignItems: 'center'}}>
+                                    <Text style={{textAlign: 'center'}}>7-24 Meses</Text>
+                                </View>
+                            </TouchableHighlight>
+                        </Col>
+                        <Col>
+                            <TouchableHighlight 
+                                style={styles.buttonTextGrid}
+                                activeOpacity={0.6}
+                                underlayColor="#3c9891"
+                                onPress={() => alert('Pressed!')}>
+                                <View style={{alignItems: 'center'}}>
+                                    <Text style={{textAlign: 'center'}}>25-60 Meses</Text>
+                                </View>
+                            </TouchableHighlight>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <TouchableHighlight 
+                                style={styles.buttonTextGrid}
+                                activeOpacity={0.6}
+                                underlayColor="#3c9891"
+                                onPress={() => alert('Pressed!')}>
+                                <View style={{alignItems: 'center'}}>
+                                    <Text style={{textAlign: 'center'}}> &gt; 5-9 anos</Text>
+                                </View>
+                            </TouchableHighlight>
+                        </Col>
+                        <Col>
+                            <TouchableHighlight 
+                                style={styles.buttonTextGrid}
+                                activeOpacity={0.6}
+                                underlayColor="#3c9891"
+                                onPress={() => alert('Pressed!')}>
+                                <View style={{alignItems: 'center'}}>
+                                    <Text style={{textAlign: 'center'}}>Adolescentes (10-19 anos)</Text>
+                                </View>
+                            </TouchableHighlight>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <TouchableHighlight 
+                                style={styles.buttonTextGrid}
+                                activeOpacity={0.6}
+                                underlayColor="#3c9891"
+                                onPress={() => alert('Pressed!')}>
+                                <View style={{alignItems: 'center'}}>
+                                    <Text style={{textAlign: 'center'}}>Adultos(20-59 anos)</Text>
+                                </View>
+                            </TouchableHighlight>
+                        </Col>
+                        <Col>
+                            <TouchableHighlight 
+                                style={styles.buttonTextGrid}
+                                activeOpacity={0.6}
+                                underlayColor="#3c9891"
+                                onPress={() => alert('Pressed!')}>
+                                <View style={{alignItems: 'center'}}>
+                                    <Text style={{textAlign: 'center'}}> Idosos (&ge; 60 anos)</Text>
+                                </View>
+                            </TouchableHighlight>
+                        </Col>
+                    </Row>
+                </Grid>
+            </ScrollView>
+            </ScrollView>
       </View>
+
+      
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
+        flex: 1,
     },
     grid:{
         margin: 5,
-        flexDirection: 'row',
-        alignSelf: 'center',
     },
     gridTitle:{
         marginTop: 10,
@@ -55,13 +254,22 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
     },
     buttonGrid:{
-        alignItems: 'center',
         borderStyle: 'solid',
         borderColor: '#3c9891',
         borderWidth: 1,
         borderRadius: 4,
         padding: 5,
         margin: 5,
-        width: '30%',
+    },
+
+    buttonTextGrid:{
+        alignItems: 'center',
+        borderStyle: 'solid',
+        borderColor: '#3c9891',
+        borderWidth: 1,
+        borderRadius: 4,
+        padding: 15,
+        margin: 5,
+        height: 70,
     },
   });
