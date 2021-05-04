@@ -1,10 +1,15 @@
 import React from 'react';
 import {Appbar, DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from 'react-native-screens/native-stack';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 //Screens
 import Home from './src/screens/Home.js';
+import Favorites from './src/screens/Favorites.js';
+import Documents from './src/screens/Documents.js';
 
 //Tema configs
 const theme = {
@@ -16,19 +21,47 @@ const theme = {
   },
 };
 
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
 
 export default function App() {
   return (
     <PaperProvider theme={theme}>
     <NavigationContainer>
-      <Stack.Navigator
+    <Tab.Navigator
         initialRouteName="Home"
-        screenOptions={{
-          header: (props) => <CustomNavigationBar {...props} />,
-        }}>
-        <Stack.Screen name="Home" component={Home}/>
-      </Stack.Navigator>
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Home') {
+              iconName = focused
+                ? 'clipboard'
+                : 'clipboard';
+            }
+            if (route.name === 'Documentos') {
+              iconName = focused
+                ? 'document-text-outline'
+                : 'document-text-outline';
+            } 
+            else if (route.name === 'Favoritos') {
+              iconName = focused ? 'star' : 'star';
+            }
+
+            // You can return any component that you like here!
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+        })}
+        tabBarOptions={{
+          activeTintColor: '#3c9891',
+          inactiveTintColor: 'gray',
+        }}
+      >
+        <Tab.Screen name="Favoritos" component={Favorites} />
+        <Tab.Screen name="Home" component={Home} />
+        <Tab.Screen name="Documentos" component={Documents} />
+      </Tab.Navigator>
     </NavigationContainer>
   </PaperProvider>
   );

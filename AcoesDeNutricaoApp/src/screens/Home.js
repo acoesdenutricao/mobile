@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import { StyleSheet, SafeAreaView, View, TouchableHighlight, ScrollView } from 'react-native';
-import { Avatar, Text, Button, Card, Title, Paragraph } from 'react-native-paper';
+import {Avatar, Appbar, Text, Button, Card, Title, Paragraph } from 'react-native-paper';
 import MaterialTabs from 'react-native-material-tabs';
 import { Col, Row, Grid } from "react-native-easy-grid";
 
-
-
 export default function Home({ navigation }) {
+    /* Estado da tela inicial entre principal e histórico */
     const [selectedTab, setSelectedTab] = useState(0);
-
-    const LeftContent = props => <Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={50} icon="google-circles-communities" />
-    const RightContent = props => <Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={50}  icon="star-outline" />
-
+    
 
     return (
         <View style={styles.container}>
             {/* Menu principal */}
             <SafeAreaView>
+                <Appbar.Header>
+                    <Appbar.Content title="Ações de Nutrição"/>
+                </Appbar.Header>
                 <MaterialTabs
                     items={['Ações de Alimentação', 'Histórico']}
                     selectedIndex={selectedTab}
@@ -303,7 +302,12 @@ export default function Home({ navigation }) {
                         </Grid>
                     </ScrollView>
                 </ScrollView>
-            }
+                }
+                <SafeAreaView style={{padding: 10}}>
+                    <Button mode="contained" onPress={() => console.log('Pressed')}>
+                        Buscar
+                    </Button>
+                </SafeAreaView>
         </View>
 
 
