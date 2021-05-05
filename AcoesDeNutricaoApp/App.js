@@ -30,12 +30,12 @@ export default function App() {
     <PaperProvider theme={theme}>
     <NavigationContainer>
     <Tab.Navigator
-        initialRouteName="Home"
+        initialRouteName="Ações de Nutrição"
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === 'Home') {
+            if (route.name === 'Ações de Nutrição') {
               iconName = focused
                 ? 'clipboard'
                 : 'clipboard';
@@ -59,7 +59,7 @@ export default function App() {
         }}
       >
         <Tab.Screen name="Favoritos" component={Favorites} />
-        <Tab.Screen name="Home" component={Home} />
+        <Tab.Screen name="Ações de Nutrição" component={Home} />
         <Tab.Screen name="Documentos" component={Documents} />
       </Tab.Navigator>
     </NavigationContainer>
