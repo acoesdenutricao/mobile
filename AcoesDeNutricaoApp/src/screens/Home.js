@@ -13,9 +13,6 @@ export default function Home({ navigation }) {
         <View style={styles.container}>
             {/* Menu principal */}
             <SafeAreaView>
-                <Appbar.Header>
-                    <Appbar.Content title="Ações de Nutrição"/>
-                </Appbar.Header>
                 <MaterialTabs
                     items={['Ações de Alimentação', 'Histórico']}
                     selectedIndex={selectedTab}
@@ -100,7 +97,7 @@ export default function Home({ navigation }) {
                                 style={styles.buttonGrid}
                                 activeOpacity={0.6}
                                 underlayColor="#3c9891"
-                                onPress={() => alert('Pressed!')}>
+                                onPress={() => navigation.navigate('Information')}>
                                 <View style={{ alignItems: 'center' }}>
                                     <Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={50} icon="account-outline" />
                                     <Text>Indivíduo</Text>
