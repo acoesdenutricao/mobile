@@ -7,7 +7,41 @@ import { Col, Row, Grid } from "react-native-easy-grid";
 export default function Home({ navigation }) {
     /* Estado da tela inicial entre principal e histórico */
     const [selectedTab, setSelectedTab] = useState(0);
+
+    const [sujeitoAbordagem, setSujeitoAbordagem] = useState(0);
+    const [nivelAbordagem, setNivelAbordagem]= useState(0);
+    const [selectedAcao, setSelectedAcao] = useState(0);
     
+
+    const ButtonGrid = (props) => {
+        return (
+            <TouchableHighlight
+                style={styles.buttonGrid}
+                activeOpacity={0.6}
+                underlayColor="#3c9891"
+                onPress={() => setSujeitoAbordagem('Indivíduo')}>
+                <View style={{ alignItems: 'center' }}>
+                    <Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={50} icon= {props.iconName} />
+                    <Text>{props.text}</Text>
+                </View>
+            </TouchableHighlight>
+        );
+    }
+
+    const ButtonGridActive = (props) => {
+        return (
+            <TouchableHighlight
+                style={styles.buttonGridActive}
+                activeOpacity={0.6}
+                underlayColor="#3c9891"
+                onPress={() => setSujeitoAbordagem('Indivíduo')}>
+                <View style={{ alignItems: 'center' }}>
+                    <Avatar.Icon style={{backgroundColor: "transparent"}} color="white" size={50} icon= {props.iconName} />
+                    <Text style={{color: 'white'}}>{props.text}</Text>
+                </View>
+            </TouchableHighlight>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -89,27 +123,25 @@ export default function Home({ navigation }) {
                 :
 
                 <ScrollView>
+                    <Text>sujeitoAbordagem: {sujeitoAbordagem}</Text>
+                    <Text>nivelAbordagem: {nivelAbordagem}</Text>
+                    <Text>selectedAcao: {selectedAcao}</Text>
                     {/* Sujeito da abordagem */}
                     <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
                     <Grid style={styles.grid}>
                         <Col>
-                            <TouchableHighlight
-                                style={styles.buttonGrid}
-                                activeOpacity={0.6}
-                                underlayColor="#3c9891"
-                                onPress={() => navigation.navigate('Information')}>
-                                <View style={{ alignItems: 'center' }}>
-                                    <Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={50} icon="account-outline" />
-                                    <Text>Indivíduo</Text>
-                                </View>
-                            </TouchableHighlight>
+                            {sujeitoAbordagem == 'Indivíduo'?
+                                <ButtonGridActive iconName='account-outline' text='Indivíduo'></ButtonGridActive>
+                            :
+                                <ButtonGrid iconName='account-outline' text='Indivíduo'></ButtonGrid>
+                            }
                         </Col>
                         <Col>
                             <TouchableHighlight
                                 style={styles.buttonGrid}
                                 activeOpacity={0.6}
                                 underlayColor="#3c9891"
-                                onPress={() => alert('Pressed!')}>
+                                onPress={() => setSujeitoAbordagem('Família')}>
                                 <View style={{ alignItems: 'center' }}>
                                     <Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={50} icon="account-group-outline" />
                                     <Text>Família</Text>
@@ -121,7 +153,7 @@ export default function Home({ navigation }) {
                                 style={styles.buttonGrid}
                                 activeOpacity={0.6}
                                 underlayColor="#3c9891"
-                                onPress={() => alert('Pressed!')}>
+                                onPress={() => setSujeitoAbordagem('Comunidade')}>
                                 <View style={{ alignItems: 'center' }}>
                                     <Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={50} icon="google-circles-communities" />
                                     <Text>Comunidade</Text>
@@ -139,7 +171,7 @@ export default function Home({ navigation }) {
                                     style={styles.buttonTextGrid}
                                     activeOpacity={0.6}
                                     underlayColor="#3c9891"
-                                    onPress={() => alert('Pressed!')}>
+                                    onPress={() => setNivelAbordagem('Diagnóstico')}>
                                     <View style={{ alignItems: 'center' }}>
                                         <Text style={{ textAlign: 'center' }}>Diagnóstico</Text>
                                     </View>
@@ -150,7 +182,7 @@ export default function Home({ navigation }) {
                                     style={styles.buttonTextGrid}
                                     activeOpacity={0.6}
                                     underlayColor="#3c9891"
-                                    onPress={() => alert('Pressed!')}>
+                                    onPress={() => setNivelAbordagem('Promoção da Saúde')}>
                                     <View style={{ alignItems: 'center' }}>
                                         <Text style={{ textAlign: 'center' }}>Promoção da Saúde</Text>
                                     </View>
@@ -163,7 +195,7 @@ export default function Home({ navigation }) {
                                     style={styles.buttonTextGrid}
                                     activeOpacity={0.6}
                                     underlayColor="#3c9891"
-                                    onPress={() => alert('Pressed!')}>
+                                    onPress={() => setNivelAbordagem('Prevenção de Doenças')}>
                                     <View style={{ alignItems: 'center' }}>
                                         <Text style={{ textAlign: 'center' }}>Prevenção de Doenças</Text>
                                     </View>
@@ -174,7 +206,7 @@ export default function Home({ navigation }) {
                                     style={styles.buttonTextGrid}
                                     activeOpacity={0.6}
                                     underlayColor="#3c9891"
-                                    onPress={() => alert('Pressed!')}>
+                                    onPress={() => setNivelAbordagem('Assistencia, Tratamento e Cuidado')}>
                                     <View style={{ alignItems: 'center' }}>
                                         <Text style={{ textAlign: 'center' }}>Assistencia, Tratamento e Cuidado</Text>
                                     </View>
@@ -193,7 +225,7 @@ export default function Home({ navigation }) {
                                         style={styles.buttonTextGrid}
                                         activeOpacity={0.6}
                                         underlayColor="#3c9891"
-                                        onPress={() => alert('Pressed!')}>
+                                        onPress={() => setSelectedAcao('Ações Universais')}>
                                         <View style={{ alignItems: 'center' }}>
                                             <Text style={{ textAlign: 'center' }}>Ações Universais</Text>
                                         </View>
@@ -206,7 +238,7 @@ export default function Home({ navigation }) {
                                         style={styles.buttonTextGrid}
                                         activeOpacity={0.6}
                                         underlayColor="#3c9891"
-                                        onPress={() => alert('Pressed!')}>
+                                        onPress={() => setSelectedAcao('Gestantes')}>
                                         <View style={{ alignItems: 'center' }}>
                                             <Text style={{ textAlign: 'center' }}>Gestantes</Text>
                                         </View>
@@ -217,7 +249,7 @@ export default function Home({ navigation }) {
                                         style={styles.buttonTextGrid}
                                         activeOpacity={0.6}
                                         underlayColor="#3c9891"
-                                        onPress={() => alert('Pressed!')}>
+                                        onPress={() => setSelectedAcao('0-6 meses')}>
                                         <View style={{ alignItems: 'center' }}>
                                             <Text style={{ textAlign: 'center' }}>0-6 Meses</Text>
                                         </View>
@@ -230,7 +262,7 @@ export default function Home({ navigation }) {
                                         style={styles.buttonTextGrid}
                                         activeOpacity={0.6}
                                         underlayColor="#3c9891"
-                                        onPress={() => alert('Pressed!')}>
+                                        onPress={() => setSelectedAcao('7-24 Meses')}>
                                         <View style={{ alignItems: 'center' }}>
                                             <Text style={{ textAlign: 'center' }}>7-24 Meses</Text>
                                         </View>
@@ -241,7 +273,7 @@ export default function Home({ navigation }) {
                                         style={styles.buttonTextGrid}
                                         activeOpacity={0.6}
                                         underlayColor="#3c9891"
-                                        onPress={() => alert('Pressed!')}>
+                                        onPress={() => setSelectedAcao('25-60 Meses')}>
                                         <View style={{ alignItems: 'center' }}>
                                             <Text style={{ textAlign: 'center' }}>25-60 Meses</Text>
                                         </View>
@@ -254,7 +286,7 @@ export default function Home({ navigation }) {
                                         style={styles.buttonTextGrid}
                                         activeOpacity={0.6}
                                         underlayColor="#3c9891"
-                                        onPress={() => alert('Pressed!')}>
+                                        onPress={() => setSelectedAcao('> 5-9 anos')}>
                                         <View style={{ alignItems: 'center' }}>
                                             <Text style={{ textAlign: 'center' }}> &gt; 5-9 anos</Text>
                                         </View>
@@ -265,7 +297,7 @@ export default function Home({ navigation }) {
                                         style={styles.buttonTextGrid}
                                         activeOpacity={0.6}
                                         underlayColor="#3c9891"
-                                        onPress={() => alert('Pressed!')}>
+                                        onPress={() => setSelectedAcao('Adolescentes 10-19 anos')}>
                                         <View style={{ alignItems: 'center' }}>
                                             <Text style={{ textAlign: 'center' }}>Adolescentes (10-19 anos)</Text>
                                         </View>
@@ -278,7 +310,7 @@ export default function Home({ navigation }) {
                                         style={styles.buttonTextGrid}
                                         activeOpacity={0.6}
                                         underlayColor="#3c9891"
-                                        onPress={() => alert('Pressed!')}>
+                                        onPress={() => setSelectedAcao('Adultos(20-59 anos)')}>
                                         <View style={{ alignItems: 'center' }}>
                                             <Text style={{ textAlign: 'center' }}>Adultos(20-59 anos)</Text>
                                         </View>
@@ -289,7 +321,7 @@ export default function Home({ navigation }) {
                                         style={styles.buttonTextGrid}
                                         activeOpacity={0.6}
                                         underlayColor="#3c9891"
-                                        onPress={() => alert('Pressed!')}>
+                                        onPress={() => setSelectedAcao('Idosos (> 60 anos)')}>
                                         <View style={{ alignItems: 'center' }}>
                                             <Text style={{ textAlign: 'center' }}> Idosos (&ge; 60 anos)</Text>
                                         </View>
@@ -306,8 +338,6 @@ export default function Home({ navigation }) {
                     </Button>
                 </SafeAreaView>
         </View>
-
-
     )
 }
 
@@ -338,10 +368,32 @@ const styles = StyleSheet.create({
         margin: 5,
     },
 
+    buttonGridActive: {
+        borderStyle: 'solid',
+        borderColor: '#3c9891',
+        backgroundColor: '#3c9891',
+        borderWidth: 1,
+        borderRadius: 4,
+        padding: 5,
+        margin: 5,
+    },
+
     buttonTextGrid: {
         alignItems: 'center',
         borderStyle: 'solid',
         borderColor: '#3c9891',
+        borderWidth: 1,
+        borderRadius: 4,
+        padding: 15,
+        margin: 5,
+        height: 70,
+    },
+
+    buttonTextGridActive: {
+        alignItems: 'center',
+        borderStyle: 'solid',
+        borderColor: '#3c9891',
+        backgroundColor: '#3c9891',
         borderWidth: 1,
         borderRadius: 4,
         padding: 15,
