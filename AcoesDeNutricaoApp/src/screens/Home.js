@@ -1,17 +1,36 @@
-import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, View, TouchableHighlight, ScrollView } from 'react-native';
-import {Avatar, Appbar, Text, Button, Card, Title, Paragraph } from 'react-native-paper';
+import React, { useState, useEffect, useRef } from 'react';
+import { StyleSheet, SafeAreaView, View, TouchableHighlight, ScrollView, PanResponder } from 'react-native';
+import { Avatar, Appbar, Text, Button, Card, Title, Paragraph } from 'react-native-paper';
 import MaterialTabs from 'react-native-material-tabs';
 import { Col, Row, Grid } from "react-native-easy-grid";
 
 export default function Home({ navigation }) {
+    const [isLoading, setLoading] = useState(true);
+
+    //Conexao API Example
+    useEffect(() => {
+        fetch('https://jsonplaceholder.typicode.com/posts', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: 'foo',
+                body: 'bar',
+                userId: 1,
+            }),
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        })
+            .then((response) => response.json())
+            .then((json) => console.log(json));
+    });
+
     /* Estado da tela inicial entre principal e histórico */
     const [selectedTab, setSelectedTab] = useState(0);
 
     const [sujeitoAbordagem, setSujeitoAbordagem] = useState(0);
-    const [nivelAbordagem, setNivelAbordagem]= useState(0);
+    const [nivelAbordagem, setNivelAbordagem] = useState(0);
     const [selectedAcao, setSelectedAcao] = useState(0);
-    
+
 
     const ButtonGrid = (props) => {
         return (
@@ -19,9 +38,9 @@ export default function Home({ navigation }) {
                 style={styles.buttonGrid}
                 activeOpacity={0.6}
                 underlayColor="#3c9891"
-                onPress={() => setSujeitoAbordagem('Indivíduo')}>
+                onPress={() => setSujeitoAbordagem(props.id)}>
                 <View style={{ alignItems: 'center' }}>
-                    <Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={50} icon= {props.iconName} />
+                    <Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={50} icon={props.iconName} />
                     <Text>{props.text}</Text>
                 </View>
             </TouchableHighlight>
@@ -34,10 +53,66 @@ export default function Home({ navigation }) {
                 style={styles.buttonGridActive}
                 activeOpacity={0.6}
                 underlayColor="#3c9891"
-                onPress={() => setSujeitoAbordagem('Indivíduo')}>
+                onPress={() => setSujeitoAbordagem(props.id)}>
                 <View style={{ alignItems: 'center' }}>
-                    <Avatar.Icon style={{backgroundColor: "transparent"}} color="white" size={50} icon= {props.iconName} />
-                    <Text style={{color: 'white'}}>{props.text}</Text>
+                    <Avatar.Icon style={{ backgroundColor: "transparent" }} color="white" size={50} icon={props.iconName} />
+                    <Text style={{ color: 'white' }}>{props.text}</Text>
+                </View>
+            </TouchableHighlight>
+        );
+    }
+
+    const ButtonTextGridNivelAbordagem = (props) =>{
+        return(
+            <TouchableHighlight
+            style={styles.buttonTextGrid}
+            activeOpacity={0.6}
+            underlayColor="#3c9891"
+            onPress={() => setNivelAbordagem(props.id)}>
+                <View style={{ alignItems: 'center' }}>
+                    <Text style={{ textAlign: 'center' }}>{props.text}</Text>
+                </View>
+            </TouchableHighlight>
+        );
+    }
+
+    const ButtonTextGridNivelAbordagemActive = (props) =>{
+        return(
+            <TouchableHighlight
+            style={styles.buttonTextGridActive}
+            activeOpacity={0.6}
+            underlayColor="#3c9891"
+            onPress={() => setNivelAbordagem(props.id)}>
+                <View style={{ alignItems: 'center' }}>
+                    <Text style={{ textAlign: 'center', color: 'white' }}>{props.text}</Text>
+                </View>
+            </TouchableHighlight>
+        );
+    }
+
+    const ButtonTextGridAcao = (props) =>{
+        return(
+            <TouchableHighlight
+            style={styles.buttonTextGrid}
+            activeOpacity={0.6}
+            underlayColor="#3c9891"
+            onPress={() => setSelectedAcao(props.id)}>
+                <View style={{ alignItems: 'center' }}>
+                    <Text style={{ textAlign: 'center' }}>{props.text}</Text>
+                </View>
+            </TouchableHighlight>
+        );
+    }
+
+    const ButtonTextGridAcaoActive = (props) =>{
+        return(
+            <TouchableHighlight
+            style={styles.buttonTextGridActive}
+            activeOpacity={0.6}
+            underlayColor="#3c9891"
+            onPress={() => setSelectedAcao(props.id)}>
+                <View style={{ alignItems: 'center' }}>
+                    <Text style={{ textAlign: 'center', color: 'white' }}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -58,63 +133,63 @@ export default function Home({ navigation }) {
                 />
             </SafeAreaView>
 
-            {selectedTab == 1   ? //Se selectTab for igual a histórico
+            {selectedTab == 1 ? //Se selectTab for igual a histórico
                 //Histórico
                 <ScrollView>
                     <Card style={styles.card}>
                         <Card.Content>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row'}}><Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={40}  icon="google-circles-communities" /><Text style={{fontSize: 16, textAlignVertical: 'center'}}>Comunidade</Text></View>
-                                <View style={{flexDirection: 'row'}}><Text style={{fontSize: 14, color: "grey", textAlignVertical: 'center'}}>03/05/2020</Text><Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={40}  icon="star-outline" /></View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="google-circles-communities" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Comunidade</Text></View>
+                                <View style={{ flexDirection: 'row' }}><Text style={{ fontSize: 14, color: "grey", textAlignVertical: 'center' }}>03/05/2020</Text><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></View>
                             </View>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row'}}><Avatar.Icon style={{backgroundColor: "transparent"}} color="#b393cb" size={40}  icon="label" /><Text style={{fontSize: 16, textAlignVertical: 'center'}}>Assistência, Tratamento e Cuidado</Text></View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Assistência, Tratamento e Cuidado</Text></View>
                             </View>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row'}}><Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={40}  icon="label" /><Text style={{fontSize: 16, textAlignVertical: 'center'}}>Ações Universais</Text></View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Ações Universais</Text></View>
                             </View>
                         </Card.Content>
                     </Card>
                     {/*replicas*/}
                     <Card style={styles.card}>
                         <Card.Content>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row'}}><Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={40}  icon="google-circles-communities" /><Text style={{fontSize: 16, textAlignVertical: 'center'}}>Comunidade</Text></View>
-                                <View style={{flexDirection: 'row'}}><Text style={{fontSize: 14, color: "grey", textAlignVertical: 'center'}}>03/05/2020</Text><Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={40}  icon="star-outline" /></View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="google-circles-communities" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Comunidade</Text></View>
+                                <View style={{ flexDirection: 'row' }}><Text style={{ fontSize: 14, color: "grey", textAlignVertical: 'center' }}>03/05/2020</Text><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></View>
                             </View>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row'}}><Avatar.Icon style={{backgroundColor: "transparent"}} color="#b393cb" size={40}  icon="label" /><Text style={{fontSize: 16, textAlignVertical: 'center'}}>Assistência, Tratamento e Cuidado</Text></View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Assistência, Tratamento e Cuidado</Text></View>
                             </View>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row'}}><Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={40}  icon="label" /><Text style={{fontSize: 16, textAlignVertical: 'center'}}>Ações Universais</Text></View>
-                            </View>
-                        </Card.Content>
-                    </Card>
-                    <Card style={styles.card}>
-                        <Card.Content>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row'}}><Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={40}  icon="google-circles-communities" /><Text style={{fontSize: 16, textAlignVertical: 'center'}}>Comunidade</Text></View>
-                                <View style={{flexDirection: 'row'}}><Text style={{fontSize: 14, color: "grey", textAlignVertical: 'center'}}>03/05/2020</Text><Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={40}  icon="star-outline" /></View>
-                            </View>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row'}}><Avatar.Icon style={{backgroundColor: "transparent"}} color="#b393cb" size={40}  icon="label" /><Text style={{fontSize: 16, textAlignVertical: 'center'}}>Assistência, Tratamento e Cuidado</Text></View>
-                            </View>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row'}}><Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={40}  icon="label" /><Text style={{fontSize: 16, textAlignVertical: 'center'}}>Ações Universais</Text></View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Ações Universais</Text></View>
                             </View>
                         </Card.Content>
                     </Card>
                     <Card style={styles.card}>
                         <Card.Content>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row'}}><Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={40}  icon="google-circles-communities" /><Text style={{fontSize: 16, textAlignVertical: 'center'}}>Comunidade</Text></View>
-                                <View style={{flexDirection: 'row'}}><Text style={{fontSize: 14, color: "grey", textAlignVertical: 'center'}}>03/05/2020</Text><Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={40}  icon="star-outline" /></View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="google-circles-communities" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Comunidade</Text></View>
+                                <View style={{ flexDirection: 'row' }}><Text style={{ fontSize: 14, color: "grey", textAlignVertical: 'center' }}>03/05/2020</Text><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></View>
                             </View>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row'}}><Avatar.Icon style={{backgroundColor: "transparent"}} color="#b393cb" size={40}  icon="label" /><Text style={{fontSize: 16, textAlignVertical: 'center'}}>Assistência, Tratamento e Cuidado</Text></View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Assistência, Tratamento e Cuidado</Text></View>
                             </View>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                <View style={{flexDirection: 'row'}}><Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={40}  icon="label" /><Text style={{fontSize: 16, textAlignVertical: 'center'}}>Ações Universais</Text></View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Ações Universais</Text></View>
+                            </View>
+                        </Card.Content>
+                    </Card>
+                    <Card style={styles.card}>
+                        <Card.Content>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="google-circles-communities" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Comunidade</Text></View>
+                                <View style={{ flexDirection: 'row' }}><Text style={{ fontSize: 14, color: "grey", textAlignVertical: 'center' }}>03/05/2020</Text><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></View>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Assistência, Tratamento e Cuidado</Text></View>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Ações Universais</Text></View>
                             </View>
                         </Card.Content>
                     </Card>
@@ -126,14 +201,15 @@ export default function Home({ navigation }) {
                     <Text>sujeitoAbordagem: {sujeitoAbordagem}</Text>
                     <Text>nivelAbordagem: {nivelAbordagem}</Text>
                     <Text>selectedAcao: {selectedAcao}</Text>
+                    
                     {/* Sujeito da abordagem */}
                     <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
                     <Grid style={styles.grid}>
                         <Col>
-                            {sujeitoAbordagem == 'Indivíduo'?
-                                <ButtonGridActive iconName='account-outline' text='Indivíduo'></ButtonGridActive>
-                            :
-                                <ButtonGrid iconName='account-outline' text='Indivíduo'></ButtonGrid>
+                            {sujeitoAbordagem == '1' ?
+                                <ButtonGridActive iconName='account-outline' text='Indivíduo' id='1'></ButtonGridActive>
+                                :
+                                <ButtonGrid iconName='account-outline' text='Indivíduo' id='1'></ButtonGrid>
                             }
                         </Col>
                         <Col>
@@ -143,7 +219,7 @@ export default function Home({ navigation }) {
                                 underlayColor="#3c9891"
                                 onPress={() => setSujeitoAbordagem('Família')}>
                                 <View style={{ alignItems: 'center' }}>
-                                    <Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={50} icon="account-group-outline" />
+                                    <Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={50} icon="account-group-outline" />
                                     <Text>Família</Text>
                                 </View>
                             </TouchableHighlight>
@@ -155,7 +231,7 @@ export default function Home({ navigation }) {
                                 underlayColor="#3c9891"
                                 onPress={() => setSujeitoAbordagem('Comunidade')}>
                                 <View style={{ alignItems: 'center' }}>
-                                    <Avatar.Icon style={{backgroundColor: "transparent"}} color="#3c9891" size={50} icon="google-circles-communities" />
+                                    <Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={50} icon="google-circles-communities" />
                                     <Text>Comunidade</Text>
                                 </View>
                             </TouchableHighlight>
@@ -167,15 +243,12 @@ export default function Home({ navigation }) {
                     <Grid style={styles.grid}>
                         <Row>
                             <Col>
-                                <TouchableHighlight
-                                    style={styles.buttonTextGrid}
-                                    activeOpacity={0.6}
-                                    underlayColor="#3c9891"
-                                    onPress={() => setNivelAbordagem('Diagnóstico')}>
-                                    <View style={{ alignItems: 'center' }}>
-                                        <Text style={{ textAlign: 'center' }}>Diagnóstico</Text>
-                                    </View>
-                                </TouchableHighlight>
+                                {nivelAbordagem == '1' ?
+                                    <ButtonTextGridNivelAbordagemActive text='Diagnóstico' id='1'></ButtonTextGridNivelAbordagemActive>
+                                    :
+                                    <ButtonTextGridNivelAbordagem text='Diagnóstico' id='1'></ButtonTextGridNivelAbordagem>
+                                }
+                                
                             </Col>
                             <Col>
                                 <TouchableHighlight
@@ -221,15 +294,11 @@ export default function Home({ navigation }) {
                         <Grid style={styles.grid}>
                             <Row>
                                 <Col>
-                                    <TouchableHighlight
-                                        style={styles.buttonTextGrid}
-                                        activeOpacity={0.6}
-                                        underlayColor="#3c9891"
-                                        onPress={() => setSelectedAcao('Ações Universais')}>
-                                        <View style={{ alignItems: 'center' }}>
-                                            <Text style={{ textAlign: 'center' }}>Ações Universais</Text>
-                                        </View>
-                                    </TouchableHighlight>
+                                    {selectedAcao == '1' ?
+                                        <ButtonTextGridAcaoActive text='Ações Universais' id='1'></ButtonTextGridAcaoActive>
+                                        :
+                                        <ButtonTextGridAcao text='Ações Universais' id='1'></ButtonTextGridAcao>
+                                    }
                                 </Col>
                             </Row>
                             <Row>
@@ -331,12 +400,12 @@ export default function Home({ navigation }) {
                         </Grid>
                     </ScrollView>
                 </ScrollView>
-                }
-                <SafeAreaView style={{padding: 10}}>
-                    <Button mode="contained" onPress={() => console.log('Pressed')}>
-                        Buscar
+            }
+            <SafeAreaView style={{ padding: 10 }}>
+                <Button mode="contained" onPress={() => console.log('Pressed')}>
+                    Buscar
                     </Button>
-                </SafeAreaView>
+            </SafeAreaView>
         </View>
     )
 }
@@ -345,7 +414,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    card:{
+    card: {
         marginLeft: 10,
         marginRight: 10,
         marginTop: 5,
