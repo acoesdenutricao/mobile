@@ -28,7 +28,7 @@ export default function Home({ navigation }) {
     const [selectedTab, setSelectedTab] = useState(0);
 
     const [sujeitoAbordagem, setSujeitoAbordagem] = useState(0);
-    const [nivelAbordagem, setNivelAbordagem] = useState(0);
+    const [nivelIntervencao, setNivelIntervencao] = useState(0);
     const [selectedAcao, setSelectedAcao] = useState(0);
 
 
@@ -62,13 +62,13 @@ export default function Home({ navigation }) {
         );
     }
 
-    const ButtonTextGridNivelAbordagem = (props) =>{
-        return(
+    const ButtonTextGridNivelIntervencao = (props) => {
+        return (
             <TouchableHighlight
-            style={styles.buttonTextGrid}
-            activeOpacity={0.6}
-            underlayColor="#3c9891"
-            onPress={() => setNivelAbordagem(props.id)}>
+                style={styles.buttonTextGrid}
+                activeOpacity={0.6}
+                underlayColor="#3c9891"
+                onPress={() => setNivelIntervencao(props.id)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center' }}>{props.text}</Text>
                 </View>
@@ -76,13 +76,13 @@ export default function Home({ navigation }) {
         );
     }
 
-    const ButtonTextGridNivelAbordagemActive = (props) =>{
-        return(
+    const ButtonTextGridNivelIntervencaoActive = (props) => {
+        return (
             <TouchableHighlight
-            style={styles.buttonTextGridActive}
-            activeOpacity={0.6}
-            underlayColor="#3c9891"
-            onPress={() => setNivelAbordagem(props.id)}>
+                style={styles.buttonTextGridActive}
+                activeOpacity={0.6}
+                underlayColor="#3c9891"
+                onPress={() => setNivelIntervencao(props.id)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center', color: 'white' }}>{props.text}</Text>
                 </View>
@@ -90,13 +90,13 @@ export default function Home({ navigation }) {
         );
     }
 
-    const ButtonTextGridAcao = (props) =>{
-        return(
+    const ButtonTextGridAcao = (props) => {
+        return (
             <TouchableHighlight
-            style={styles.buttonTextGrid}
-            activeOpacity={0.6}
-            underlayColor="#3c9891"
-            onPress={() => setSelectedAcao(props.id)}>
+                style={styles.buttonTextGrid}
+                activeOpacity={0.6}
+                underlayColor="#3c9891"
+                onPress={() => setSelectedAcao(props.id)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center' }}>{props.text}</Text>
                 </View>
@@ -104,13 +104,13 @@ export default function Home({ navigation }) {
         );
     }
 
-    const ButtonTextGridAcaoActive = (props) =>{
-        return(
+    const ButtonTextGridAcaoActive = (props) => {
+        return (
             <TouchableHighlight
-            style={styles.buttonTextGridActive}
-            activeOpacity={0.6}
-            underlayColor="#3c9891"
-            onPress={() => setSelectedAcao(props.id)}>
+                style={styles.buttonTextGridActive}
+                activeOpacity={0.6}
+                underlayColor="#3c9891"
+                onPress={() => setSelectedAcao(props.id)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center', color: 'white' }}>{props.text}</Text>
                 </View>
@@ -199,9 +199,9 @@ export default function Home({ navigation }) {
 
                 <ScrollView>
                     <Text>sujeitoAbordagem: {sujeitoAbordagem}</Text>
-                    <Text>nivelAbordagem: {nivelAbordagem}</Text>
+                    <Text>nivelIntervencao: {nivelIntervencao}</Text>
                     <Text>selectedAcao: {selectedAcao}</Text>
-                    
+
                     {/* Sujeito da abordagem */}
                     <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
                     <Grid style={styles.grid}>
@@ -243,12 +243,12 @@ export default function Home({ navigation }) {
                     <Grid style={styles.grid}>
                         <Row>
                             <Col>
-                                {nivelAbordagem == '1' ?
-                                    <ButtonTextGridNivelAbordagemActive text='Diagnóstico' id='1'></ButtonTextGridNivelAbordagemActive>
+                                {nivelIntervencao == '1' ?
+                                    <ButtonTextGridNivelIntervencaoActive text='Diagnóstico' id='1'></ButtonTextGridNivelIntervencaoActive>
                                     :
-                                    <ButtonTextGridNivelAbordagem text='Diagnóstico' id='1'></ButtonTextGridNivelAbordagem>
+                                    <ButtonTextGridNivelIntervencao text='Diagnóstico' id='1'></ButtonTextGridNivelIntervencao>
                                 }
-                                
+
                             </Col>
                             <Col>
                                 <TouchableHighlight
@@ -402,7 +402,10 @@ export default function Home({ navigation }) {
                 </ScrollView>
             }
             <SafeAreaView style={{ padding: 10 }}>
-                <Button mode="contained" onPress={() => console.log('Pressed')}>
+                <Button mode="contained"
+                    onPress={() => navigation.navigate('Information',
+                        { sujeitoAbordagem: sujeitoAbordagem, nivelIntervencao: nivelIntervencao, selectedAcao: selectedAcao }
+                    )}>
                     Buscar
                     </Button>
             </SafeAreaView>
