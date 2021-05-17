@@ -37,7 +37,8 @@ export default function Home({ navigation }) {
             <TouchableHighlight
                 style={styles.buttonGrid}
                 activeOpacity={0.6}
-                underlayColor="#3c9891"
+                underlayColor="transparent"
+                activeTextColor="white"
                 onPress={() => setSujeitoAbordagem(props.id)}>
                 <View style={{ alignItems: 'center' }}>
                     <Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={50} icon={props.iconName} />
@@ -67,7 +68,7 @@ export default function Home({ navigation }) {
             <TouchableHighlight
                 style={styles.buttonTextGrid}
                 activeOpacity={0.6}
-                underlayColor="#3c9891"
+                underlayColor="transparent"
                 onPress={() => setNivelIntervencao(props.id)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center' }}>{props.text}</Text>
@@ -95,7 +96,7 @@ export default function Home({ navigation }) {
             <TouchableHighlight
                 style={styles.buttonTextGrid}
                 activeOpacity={0.6}
-                underlayColor="#3c9891"
+                underlayColor="transparent"
                 onPress={() => setSelectedAcao(props.id)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center' }}>{props.text}</Text>

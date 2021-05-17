@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet} from 'react-native';
-import { Text, Avatar } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, StyleSheet } from 'react-native';
+import { Text, Avatar, Appbar } from 'react-native-paper';
 
-export default function Information({ navigation,  route }) {
+
+export default function Information({ navigation, route }) {
+
+    //Configurações da appbar
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <Appbar.Action icon="magnify" color="white" onPress={() => { }} />
+            ),
+        });
+    });
+
     return (
         <View style={styles.container}>
             {/*cabeçalho com dados a respeito da informação*/}
-            <View style={{backgroundColor: '#EBEDED'}}>
+            <View style={{ backgroundColor: '#EBEDED' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="google-circles-communities" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Comunidade</Text></View>
                     <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></View>
@@ -15,7 +26,7 @@ export default function Information({ navigation,  route }) {
                     <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Assistência, Tratamento e Cuidado</Text></View>
                 </View>
             </View>
-            
+
             {/*conteudo da informação*/}
             <ScrollView>
                 <Text>Sujeito da Abordagem = {route.params.sujeitoAbordagem}</Text>
@@ -67,19 +78,19 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     chapter: {
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        paddingHorizontal: 15, 
-        paddingTop: 15, 
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 15,
+        paddingTop: 15,
         paddingBottom: 0
     },
     number: {
-        fontSize: 24, 
+        fontSize: 24,
         fontWeight: 'bold'
     },
     text: {
-        fontSize: 16, 
-        paddingLeft: 10, 
+        fontSize: 16,
+        paddingLeft: 10,
         paddingRight: 10
     }
 })
