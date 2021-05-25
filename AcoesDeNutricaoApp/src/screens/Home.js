@@ -1,35 +1,105 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, SafeAreaView, View, TouchableHighlight, ScrollView, PanResponder } from 'react-native';
-import { Avatar, Appbar, Text, Button, Card, Title, Paragraph } from 'react-native-paper';
+import { StyleSheet, SafeAreaView, View, TouchableHighlight, ScrollView, FlatList } from 'react-native';
+import { Avatar, Appbar, Text, Button, Card, ActivityIndicator } from 'react-native-paper';
 import MaterialTabs from 'react-native-material-tabs';
 import { Col, Row, Grid } from "react-native-easy-grid";
 
 export default function Home({ navigation }) {
-    const [isLoading, setLoading] = useState(true);
+    /*Informa se os dados da API já estão carregados */
+    const [isListaSujeitosLoading, setListaSujeitosLoading] = useState(true);
+    const [isListaNiveisIntervencaoLoading, setListaNiveisIntervencaoLoading] = useState(true);
+    const [isListaAcoesLoading, setListaAcoesLoading] = useState(true);
 
-    //Conexao API Example
+    /* Estado da tela inicial entre principal e histórico */
+    const [selectedTab, setSelectedTab] = useState(0);
+
+    const [sujeitoAbordagem, setSujeitoAbordagem] = useState(0); //sujeito da abordagem selecionado
+    const [nivelIntervencao, setNivelIntervencao] = useState(0); // nivel de intervencao selecionado
+    const [selectedAcao, setSelectedAcao] = useState(0); // acao selecionada
+
+
+    /* Armazena as listas de informações */
+    const [listaSujeitoAbordagem, setListaSujeitoAbordagem] = useState([]) // lista os sujeitos da abordagem
+    const [listaNiveisIntervencao, setListaNiveisIntervencao] = useState([]) // lista os sujeitos da abordagem
+    const [listaAcao, setListaAcao] = useState([]); // lista as acoes para o sujeito e nivel selecionados
+    const [listaAcaoTemp, setListaAcaoTemp] = useState([]); // lista as acoes para o sujeito e nivel selecionados (versao temporaria da API)
+
+
+    function atualizaDadosSelecionados(sjtAbordagem, nvlIntervencao) {
+        setListaAcao([]);
+        setListaAcaoTemp([]);
+
+        if (sjtAbordagem != 0) {
+            setSujeitoAbordagem(sjtAbordagem);
+            if (sjtAbordagem != 0 && nivelIntervencao != 0) {
+                carregarDadosListaAcao(sjtAbordagem, nivelIntervencao);
+            }
+        }
+        if (nvlIntervencao != 0) {
+            setNivelIntervencao(nvlIntervencao);
+            if (sujeitoAbordagem != 0 && nvlIntervencao != 0) {
+                carregarDadosListaAcao(sujeitoAbordagem, nvlIntervencao);
+            }
+        }
+    }
+
+    //carrega todas as acoes correspondentes ao sujeito e nivel selecionados
+    function carregarDadosListaAcao(sjtAbordagem, nvlIntervencao) {
+        requestURL = '';
+        let requestURL = "http://191.252.202.56:4000/information/" + sjtAbordagem + "/" + nvlIntervencao + "/categories"; //Armazena link responsável pela requisicao
+        let request = new XMLHttpRequest(); //Instancia um objeto de solicitacao
+        request.open('GET', requestURL);
+        request.send();
+        request.onload = function () {
+
+            var dados = [];
+
+            dadosAPI = JSON.parse(request.responseText);
+
+            dadosAPI.map(function (item, indice) {
+                item.information_categories.map(function (item, indice) {
+                    let actionId = item.action_id;
+                    dados.push({
+                        id: actionId,
+                        category_name: item.category_information_category.category
+                    })
+                })
+            });
+
+            setListaAcao(dados);
+            setListaAcoesLoading(false);
+
+        }
+    }
+
+    //busca sujeitos da abordagem
     useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/posts', {
-            method: 'POST',
-            body: JSON.stringify({
-                title: 'foo',
-                body: 'bar',
-                userId: 1,
-            }),
+        fetch('http://191.252.202.56:4000/approach-subjects', {
+            method: 'GET',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
             },
         })
             .then((response) => response.json())
-            .then((json) => console.log(json));
-    });
+            .then((json) => setListaSujeitoAbordagem(json))
+            .catch((error) => console.error(error))
+            .finally(() => setListaSujeitosLoading(false));
+    }, []);
 
-    /* Estado da tela inicial entre principal e histórico */
-    const [selectedTab, setSelectedTab] = useState(0);
-
-    const [sujeitoAbordagem, setSujeitoAbordagem] = useState(0);
-    const [nivelIntervencao, setNivelIntervencao] = useState(0);
-    const [selectedAcao, setSelectedAcao] = useState(0);
+    //busca niveis de intervencao
+    useEffect(() => {
+        fetch('http://191.252.202.56:4000/intervation-levels', {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        })
+            .then((response) => response.json())
+            .then((json) => setListaNiveisIntervencao(json))
+            .catch((error) => console.error(error))
+            .finally(() => setListaNiveisIntervencaoLoading(false));
+    }, []
+    );
 
 
     const ButtonGrid = (props) => {
@@ -39,7 +109,7 @@ export default function Home({ navigation }) {
                 activeOpacity={0.6}
                 underlayColor="transparent"
                 activeTextColor="white"
-                onPress={() => setSujeitoAbordagem(props.id)}>
+                onPress={() => atualizaDadosSelecionados(props.id, 0)}>
                 <View style={{ alignItems: 'center' }}>
                     <Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={50} icon={props.iconName} />
                     <Text>{props.text}</Text>
@@ -54,7 +124,7 @@ export default function Home({ navigation }) {
                 style={styles.buttonGridActive}
                 activeOpacity={0.6}
                 underlayColor="#3c9891"
-                onPress={() => setSujeitoAbordagem(props.id)}>
+                onPress={() => atualizaDadosSelecionados(props.id, 0)}>
                 <View style={{ alignItems: 'center' }}>
                     <Avatar.Icon style={{ backgroundColor: "transparent" }} color="white" size={50} icon={props.iconName} />
                     <Text style={{ color: 'white' }}>{props.text}</Text>
@@ -69,7 +139,7 @@ export default function Home({ navigation }) {
                 style={styles.buttonTextGrid}
                 activeOpacity={0.6}
                 underlayColor="transparent"
-                onPress={() => setNivelIntervencao(props.id)}>
+                onPress={() => atualizaDadosSelecionados(0, props.id)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center' }}>{props.text}</Text>
                 </View>
@@ -83,7 +153,7 @@ export default function Home({ navigation }) {
                 style={styles.buttonTextGridActive}
                 activeOpacity={0.6}
                 underlayColor="#3c9891"
-                onPress={() => setNivelIntervencao(props.id)}>
+                onPress={() => atualizaDadosSelecionados(0, props.id)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center', color: 'white' }}>{props.text}</Text>
                 </View>
@@ -198,218 +268,73 @@ export default function Home({ navigation }) {
 
                 :
 
-                <ScrollView>
-                    <Text>sujeitoAbordagem: {sujeitoAbordagem}</Text>
-                    <Text>nivelIntervencao: {nivelIntervencao}</Text>
-                    <Text>selectedAcao: {selectedAcao}</Text>
+                <ScrollView style={styles.container}>
 
                     {/* Sujeito da abordagem */}
                     <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
-                    <Grid style={styles.grid}>
-                        <Col>
-                            {sujeitoAbordagem == '1' ?
-                                <ButtonGridActive iconName='account-outline' text='Indivíduo' id='1'></ButtonGridActive>
-                                :
-                                <ButtonGrid iconName='account-outline' text='Indivíduo' id='1'></ButtonGrid>
-                            }
-                        </Col>
-                        <Col>
-                            <TouchableHighlight
-                                style={styles.buttonGrid}
-                                activeOpacity={0.6}
-                                underlayColor="#3c9891"
-                                onPress={() => setSujeitoAbordagem('Família')}>
-                                <View style={{ alignItems: 'center' }}>
-                                    <Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={50} icon="account-group-outline" />
-                                    <Text>Família</Text>
-                                </View>
-                            </TouchableHighlight>
-                        </Col>
-                        <Col>
-                            <TouchableHighlight
-                                style={styles.buttonGrid}
-                                activeOpacity={0.6}
-                                underlayColor="#3c9891"
-                                onPress={() => setSujeitoAbordagem('Comunidade')}>
-                                <View style={{ alignItems: 'center' }}>
-                                    <Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={50} icon="google-circles-communities" />
-                                    <Text>Comunidade</Text>
-                                </View>
-                            </TouchableHighlight>
-                        </Col>
-                    </Grid>
-
-                    {/* Nivel da abordagem  */}
-                    <Text style={styles.gridTitle}>Selecionar o nível de intervenção</Text>
-                    <Grid style={styles.grid}>
-                        <Row>
-                            <Col>
-                                {nivelIntervencao == '1' ?
-                                    <ButtonTextGridNivelIntervencaoActive text='Diagnóstico' id='1'></ButtonTextGridNivelIntervencaoActive>
+                    {isListaSujeitosLoading ? <ActivityIndicator size='large' /> : (
+                        <FlatList
+                            data={listaSujeitoAbordagem}
+                            keyExtractor={({ id }, index) => id.toString()}
+                            numColumns={3}
+                            renderItem={({ item }) => (
+                                sujeitoAbordagem == item.id ?
+                                    <ButtonGridActive iconName='account-outline' text={item.subject} id={item.id}></ButtonGridActive>
                                     :
-                                    <ButtonTextGridNivelIntervencao text='Diagnóstico' id='1'></ButtonTextGridNivelIntervencao>
-                                }
+                                    <ButtonGrid iconName='account-outline' text={item.subject} id={item.id}></ButtonGrid>
 
-                            </Col>
-                            <Col>
-                                <TouchableHighlight
-                                    style={styles.buttonTextGrid}
-                                    activeOpacity={0.6}
-                                    underlayColor="#3c9891"
-                                    onPress={() => setNivelAbordagem('Promoção da Saúde')}>
-                                    <View style={{ alignItems: 'center' }}>
-                                        <Text style={{ textAlign: 'center' }}>Promoção da Saúde</Text>
-                                    </View>
-                                </TouchableHighlight>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <TouchableHighlight
-                                    style={styles.buttonTextGrid}
-                                    activeOpacity={0.6}
-                                    underlayColor="#3c9891"
-                                    onPress={() => setNivelAbordagem('Prevenção de Doenças')}>
-                                    <View style={{ alignItems: 'center' }}>
-                                        <Text style={{ textAlign: 'center' }}>Prevenção de Doenças</Text>
-                                    </View>
-                                </TouchableHighlight>
-                            </Col>
-                            <Col>
-                                <TouchableHighlight
-                                    style={styles.buttonTextGrid}
-                                    activeOpacity={0.6}
-                                    underlayColor="#3c9891"
-                                    onPress={() => setNivelAbordagem('Assistencia, Tratamento e Cuidado')}>
-                                    <View style={{ alignItems: 'center' }}>
-                                        <Text style={{ textAlign: 'center' }}>Assistencia, Tratamento e Cuidado</Text>
-                                    </View>
-                                </TouchableHighlight>
-                            </Col>
-                        </Row>
-                    </Grid>
+                            )}
+                        />
+                    )}
 
-                    {/* Seleção da Ação  */}
+                    {/* Nivel de Intervencao*/}
+                    <Text style={styles.gridTitle}>Selecionar o nível de intervenção</Text>
+                    {isListaNiveisIntervencaoLoading ? <ActivityIndicator size='large' /> : (
+                        <FlatList
+                            data={listaNiveisIntervencao}
+                            keyExtractor={({ id }, index) => id.toString()}
+                            numColumns={2}
+                            renderItem={({ item }) => (
+                                nivelIntervencao == item.id ?
+                                    <ButtonTextGridNivelIntervencaoActive text={item.title} id={item.id}></ButtonTextGridNivelIntervencaoActive>
+                                    :
+                                    <ButtonTextGridNivelIntervencao text={item.title} id={item.id}></ButtonTextGridNivelIntervencao>
+
+                            )}
+                        />
+                    )}
+
+                    {/* Selecão da ação*/}
                     <Text style={styles.gridTitle}>Selecionar Ação</Text>
-                    <ScrollView>
-                        <Grid style={styles.grid}>
-                            <Row>
-                                <Col>
-                                    {selectedAcao == '1' ?
-                                        <ButtonTextGridAcaoActive text='Ações Universais' id='1'></ButtonTextGridAcaoActive>
+
+                    {nivelIntervencao == 0 || sujeitoAbordagem == 0 ?
+                        <Text style={{ textAlign: 'center' }}>Selecione um sujeito da abordagem e um nivel de intervenção primeiro</Text>
+                        :
+                        isListaAcoesLoading ? <ActivityIndicator size='large' /> : (
+                            <FlatList
+                                data={listaAcao}
+                                keyExtractor={({ id }, index) => id.toString()}
+                                numColumns={2}
+                                renderItem={({ item }) => (
+                                    selectedAcao == item.id ?
+                                        <ButtonTextGridAcaoActive text={item.category_name} id={item.id}></ButtonTextGridAcaoActive>
                                         :
-                                        <ButtonTextGridAcao text='Ações Universais' id='1'></ButtonTextGridAcao>
-                                    }
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <TouchableHighlight
-                                        style={styles.buttonTextGrid}
-                                        activeOpacity={0.6}
-                                        underlayColor="#3c9891"
-                                        onPress={() => setSelectedAcao('Gestantes')}>
-                                        <View style={{ alignItems: 'center' }}>
-                                            <Text style={{ textAlign: 'center' }}>Gestantes</Text>
-                                        </View>
-                                    </TouchableHighlight>
-                                </Col>
-                                <Col>
-                                    <TouchableHighlight
-                                        style={styles.buttonTextGrid}
-                                        activeOpacity={0.6}
-                                        underlayColor="#3c9891"
-                                        onPress={() => setSelectedAcao('0-6 meses')}>
-                                        <View style={{ alignItems: 'center' }}>
-                                            <Text style={{ textAlign: 'center' }}>0-6 Meses</Text>
-                                        </View>
-                                    </TouchableHighlight>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <TouchableHighlight
-                                        style={styles.buttonTextGrid}
-                                        activeOpacity={0.6}
-                                        underlayColor="#3c9891"
-                                        onPress={() => setSelectedAcao('7-24 Meses')}>
-                                        <View style={{ alignItems: 'center' }}>
-                                            <Text style={{ textAlign: 'center' }}>7-24 Meses</Text>
-                                        </View>
-                                    </TouchableHighlight>
-                                </Col>
-                                <Col>
-                                    <TouchableHighlight
-                                        style={styles.buttonTextGrid}
-                                        activeOpacity={0.6}
-                                        underlayColor="#3c9891"
-                                        onPress={() => setSelectedAcao('25-60 Meses')}>
-                                        <View style={{ alignItems: 'center' }}>
-                                            <Text style={{ textAlign: 'center' }}>25-60 Meses</Text>
-                                        </View>
-                                    </TouchableHighlight>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <TouchableHighlight
-                                        style={styles.buttonTextGrid}
-                                        activeOpacity={0.6}
-                                        underlayColor="#3c9891"
-                                        onPress={() => setSelectedAcao('> 5-9 anos')}>
-                                        <View style={{ alignItems: 'center' }}>
-                                            <Text style={{ textAlign: 'center' }}> &gt; 5-9 anos</Text>
-                                        </View>
-                                    </TouchableHighlight>
-                                </Col>
-                                <Col>
-                                    <TouchableHighlight
-                                        style={styles.buttonTextGrid}
-                                        activeOpacity={0.6}
-                                        underlayColor="#3c9891"
-                                        onPress={() => setSelectedAcao('Adolescentes 10-19 anos')}>
-                                        <View style={{ alignItems: 'center' }}>
-                                            <Text style={{ textAlign: 'center' }}>Adolescentes (10-19 anos)</Text>
-                                        </View>
-                                    </TouchableHighlight>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <TouchableHighlight
-                                        style={styles.buttonTextGrid}
-                                        activeOpacity={0.6}
-                                        underlayColor="#3c9891"
-                                        onPress={() => setSelectedAcao('Adultos(20-59 anos)')}>
-                                        <View style={{ alignItems: 'center' }}>
-                                            <Text style={{ textAlign: 'center' }}>Adultos(20-59 anos)</Text>
-                                        </View>
-                                    </TouchableHighlight>
-                                </Col>
-                                <Col>
-                                    <TouchableHighlight
-                                        style={styles.buttonTextGrid}
-                                        activeOpacity={0.6}
-                                        underlayColor="#3c9891"
-                                        onPress={() => setSelectedAcao('Idosos (> 60 anos)')}>
-                                        <View style={{ alignItems: 'center' }}>
-                                            <Text style={{ textAlign: 'center' }}> Idosos (&ge; 60 anos)</Text>
-                                        </View>
-                                    </TouchableHighlight>
-                                </Col>
-                            </Row>
-                        </Grid>
-                    </ScrollView>
+                                        <ButtonTextGridAcao text={item.category_name} id={item.id}></ButtonTextGridAcao>
+                                )}
+                            />)
+                    }
+
+                    <SafeAreaView style={{ padding: 10 }}>
+                        <Button mode="contained"
+                            disabled={selectedAcao == 0}
+                            onPress={() => navigation.navigate('Information',
+                                { selectedAcao: selectedAcao }
+                            )}>
+                            Buscar
+                        </Button>
+                    </SafeAreaView>
                 </ScrollView>
             }
-            <SafeAreaView style={{ padding: 10 }}>
-                <Button mode="contained"
-                    onPress={() => navigation.navigate('Information',
-                        { sujeitoAbordagem: sujeitoAbordagem, nivelIntervencao: nivelIntervencao, selectedAcao: selectedAcao }
-                    )}>
-                    Buscar
-                    </Button>
-            </SafeAreaView>
         </View>
     )
 }
@@ -426,6 +351,16 @@ const styles = StyleSheet.create({
     },
     grid: {
         margin: 5,
+        flex: 1,
+        flexDirection: 'row'
+    },
+    item: {
+        alignItems: "center",
+        backgroundColor: "#dcda48",
+        flexGrow: 1,
+        margin: 4,
+        padding: 20,
+        flexBasis: 0,
     },
     gridTitle: {
         marginTop: 10,
@@ -439,6 +374,9 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         padding: 5,
         margin: 5,
+        alignItems: "center",
+        flexGrow: 1,
+        flexBasis: 0,
     },
 
     buttonGridActive: {
@@ -449,6 +387,9 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         padding: 5,
         margin: 5,
+        alignItems: "center",
+        flexGrow: 1,
+        flexBasis: 0,
     },
 
     buttonTextGrid: {
@@ -460,6 +401,9 @@ const styles = StyleSheet.create({
         padding: 15,
         margin: 5,
         height: 70,
+        alignItems: "center",
+        flexGrow: 1,
+        flexBasis: 0,
     },
 
     buttonTextGridActive: {
@@ -472,5 +416,8 @@ const styles = StyleSheet.create({
         padding: 15,
         margin: 5,
         height: 70,
+        alignItems: "center",
+        flexGrow: 1,
+        flexBasis: 0,
     },
 });
