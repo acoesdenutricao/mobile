@@ -11,6 +11,7 @@ import Home from './src/screens/Home.js';
 import Favorites from './src/screens/Favorites.js';
 import Documents from './src/screens/Documents.js';
 import References from './src/screens/References.js';
+import Information from './src/screens/Information.js';
 
 
 //Tema configs
@@ -55,6 +56,38 @@ function DocumentsStack() {
   );
 }
 
+//pilha para navegação da aba ações de nutrição (home)
+function HomeStack() {
+  return (
+    <Stack.Navigator
+      initialRouteName="Home"
+      screenOptions={({ route }) => ({
+        header: (props) => <CustomNavigationBar {...props} />,
+        tabBarOptions: false,
+      })
+      }>
+      <Stack.Screen name="Home" component={Home}
+        options={{
+          title: 'Ações Universais',
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+          headerTintColor: '#fff'
+          }}
+        />
+      <Stack.Screen name="Information" component={Information}
+        options={{
+          title: 'Ações Universais',
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+          headerTintColor: '#fff'
+          }} 
+        />
+    </Stack.Navigator>
+  );
+}
+
 export default function App() {
   return (
     <PaperProvider theme={theme}>
@@ -89,7 +122,7 @@ export default function App() {
           }}
         >
           <Tab.Screen name="Favoritos" component={Favorites} />
-          <Tab.Screen name="Ações de Nutrição" component={Home} />
+          <Tab.Screen name="Ações de Nutrição" component={HomeStack} />
           <Tab.Screen name="Documentos" component={DocumentsStack} />
         </Tab.Navigator>
       </NavigationContainer>
