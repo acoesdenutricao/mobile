@@ -13,9 +13,18 @@ export default function Home({ navigation }) {
     /* Estado da tela inicial entre principal e histórico */
     const [selectedTab, setSelectedTab] = useState(0);
 
+    /* id dos dados selecionados*/
     const [sujeitoAbordagem, setSujeitoAbordagem] = useState(0); //sujeito da abordagem selecionado
     const [nivelIntervencao, setNivelIntervencao] = useState(0); // nivel de intervencao selecionado
     const [selectedAcao, setSelectedAcao] = useState(0); // acao selecionada
+
+    /* nome dos dados selecionados*/
+    const [sujeitoAbordagemName, setSujeitoAbordagemName] = useState(0); //sujeito da abordagem selecionado
+    const [nivelIntervencaoName, setNivelIntervencaoName] = useState(0); // nivel de intervencao selecionado
+    const [selectedAcaoName, setSelectedAcaoName] = useState(0); // acao selecionada
+
+    /* cor dos dados selecionados */
+    const [nivelIntervencaoColor, setNivelIntervencaoColor] = useState(0); // nivel de intervencao selecionado
 
 
     /* Armazena as listas de informações */
@@ -25,18 +34,21 @@ export default function Home({ navigation }) {
     const [listaAcaoTemp, setListaAcaoTemp] = useState([]); // lista as acoes para o sujeito e nivel selecionados (versao temporaria da API)
 
 
-    function atualizaDadosSelecionados(sjtAbordagem, nvlIntervencao) {
+    function atualizaDadosSelecionados(sjtAbordagem, sjtAbordagemName, nvlIntervencao, nvlIntervencaoName, nvlIntervencaoColor) {
         setListaAcao([]);
         setListaAcaoTemp([]);
 
         if (sjtAbordagem != 0) {
             setSujeitoAbordagem(sjtAbordagem);
+            setSujeitoAbordagemName(sjtAbordagemName);
             if (sjtAbordagem != 0 && nivelIntervencao != 0) {
                 carregarDadosListaAcao(sjtAbordagem, nivelIntervencao);
             }
         }
         if (nvlIntervencao != 0) {
             setNivelIntervencao(nvlIntervencao);
+            setNivelIntervencaoName(nvlIntervencaoName);
+            setNivelIntervencaoColor(nvlIntervencaoColor);
             if (sujeitoAbordagem != 0 && nvlIntervencao != 0) {
                 carregarDadosListaAcao(sujeitoAbordagem, nvlIntervencao);
             }
@@ -109,7 +121,7 @@ export default function Home({ navigation }) {
                 activeOpacity={0.6}
                 underlayColor="transparent"
                 activeTextColor="white"
-                onPress={() => atualizaDadosSelecionados(props.id, 0)}>
+                onPress={() => atualizaDadosSelecionados(props.id, props.name, 0, 0, 0)}>
                 <View style={{ alignItems: 'center' }}>
                     <Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={50} icon={props.iconName} />
                     <Text>{props.text}</Text>
@@ -124,7 +136,7 @@ export default function Home({ navigation }) {
                 style={styles.buttonGridActive}
                 activeOpacity={0.6}
                 underlayColor="#3c9891"
-                onPress={() => atualizaDadosSelecionados(props.id, 0)}>
+                onPress={() => atualizaDadosSelecionados(props.id, props.name, 0, 0, 0)}>
                 <View style={{ alignItems: 'center' }}>
                     <Avatar.Icon style={{ backgroundColor: "transparent" }} color="white" size={50} icon={props.iconName} />
                     <Text style={{ color: 'white' }}>{props.text}</Text>
@@ -139,7 +151,7 @@ export default function Home({ navigation }) {
                 style={styles.buttonTextGrid}
                 activeOpacity={0.6}
                 underlayColor="transparent"
-                onPress={() => atualizaDadosSelecionados(0, props.id)}>
+                onPress={() => atualizaDadosSelecionados(0, 0, props.id, props.name, props.color)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center' }}>{props.text}</Text>
                 </View>
@@ -153,7 +165,7 @@ export default function Home({ navigation }) {
                 style={styles.buttonTextGridActive}
                 activeOpacity={0.6}
                 underlayColor="#3c9891"
-                onPress={() => atualizaDadosSelecionados(0, props.id)}>
+                onPress={() => atualizaDadosSelecionados(0, 0, props.id, props.name, props.color)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center', color: 'white' }}>{props.text}</Text>
                 </View>
@@ -279,9 +291,9 @@ export default function Home({ navigation }) {
                             numColumns={3}
                             renderItem={({ item }) => (
                                 sujeitoAbordagem == item.id ?
-                                    <ButtonGridActive iconName='account-outline' text={item.subject} id={item.id}></ButtonGridActive>
+                                    <ButtonGridActive iconName='account-outline' text={item.subject} id={item.id} name={item.subject}></ButtonGridActive>
                                     :
-                                    <ButtonGrid iconName='account-outline' text={item.subject} id={item.id}></ButtonGrid>
+                                    <ButtonGrid iconName='account-outline' text={item.subject} id={item.id} name={item.subject}></ButtonGrid>
 
                             )}
                         />
@@ -296,9 +308,9 @@ export default function Home({ navigation }) {
                             numColumns={2}
                             renderItem={({ item }) => (
                                 nivelIntervencao == item.id ?
-                                    <ButtonTextGridNivelIntervencaoActive text={item.title} id={item.id}></ButtonTextGridNivelIntervencaoActive>
+                                    <ButtonTextGridNivelIntervencaoActive text={item.title} id={item.id} name={item.title} color={item.color}></ButtonTextGridNivelIntervencaoActive>
                                     :
-                                    <ButtonTextGridNivelIntervencao text={item.title} id={item.id}></ButtonTextGridNivelIntervencao>
+                                    <ButtonTextGridNivelIntervencao text={item.title} id={item.id} name={item.title} color={item.color}></ButtonTextGridNivelIntervencao>
 
                             )}
                         />
@@ -328,7 +340,7 @@ export default function Home({ navigation }) {
                         <Button mode="contained"
                             disabled={selectedAcao == 0}
                             onPress={() => navigation.navigate('Information',
-                                { selectedAcao: selectedAcao }
+                                { selectedAcao: selectedAcao, sujeitoAbordagemName: sujeitoAbordagemName, nivelIntervencaoName: nivelIntervencaoName, nivelIntervencaoColor: nivelIntervencaoColor}
                             )}>
                             Buscar
                         </Button>

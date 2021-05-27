@@ -1,19 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, FlatList } from 'react-native';
-import { Text, Avatar, Appbar } from 'react-native-paper';
+import { Text, Appbar, Avatar, Button , Modal, Portal} from 'react-native-paper';
 
 
 export default function Information({ navigation, route }) {
+    const [visible, setVisible] = useState(false);
+    const showModal = () => setVisible(true);
+    const hideModal = () => setVisible(false);
 
-    const [informacao, setInformacao] = useState([]) // lista os sujeitos da abordagem
-    const [informacaoLoading, setInformacaoLoading] = useState(true) // lista os sujeitos da abordagem
+    const containerStyle = {backgroundColor: 'white', padding: 20, margin: 15, borderRadius: 5};
 
+
+    const [informacao, setInformacao] = useState([]); // lista os sujeitos da abordagem
+    const [informacaoLoading, setInformacaoLoading] = useState(true); // lista os sujeitos da abordagem
 
     //Configurações da appbar
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
-                <Appbar.Action icon="magnify" color="white" onPress={() => { }} />
+                <View style={{flexDirection: 'row'}}>
+                    <Appbar.Action icon="magnify" color="white" onPress={showModal} />
+                    <Appbar.Action icon="help-circle-outline" color="white" onPress={showModal} />
+                </View>
             ),
         });
     });
@@ -47,14 +55,26 @@ export default function Information({ navigation, route }) {
 
     return (
         <View style={styles.container}>
+            {/*modal com as legendas*/}
+            <Portal>
+                <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+                    <View style={{ flexDirection: 'row', marginLeft: -10}}>
+                        <View style={{ flexDirection: 'row'}}><Avatar.Icon style={{ backgroundColor: "transparent", marginLeft: 0 }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 14, textAlignVertical: 'center', fontWeight: 'bold' }}>Assistência, Tratamento e Cuidado</Text></View>
+                    </View>
+                    <Text>Identificação e avaliação do estado nutricional do usuário do SUS, elaborado com base em dados clínicos, bioquímicos, antropométricos e dietéticos, obtidos quando da avaliação nutricional e durante o acompanhamento individualizado;
+Fonte do conceito: Resolução do. 380/2005 – CFN , com adaptações.</Text>
+                    <Button style={{marginVertical: 5, alignSelf: 'flex-end', width: 100}} mode="contained" onPress={hideModal}>OK</Button>
+                </Modal>
+            </Portal>
+
             {/*cabeçalho com dados a respeito da informação*/}
             <View style={{ backgroundColor: '#EBEDED' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="google-circles-communities" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Comunidade</Text></View>
+                    <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="google-circles-communities" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>{route.params.sujeitoAbordagemName}</Text></View>
                     <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></View>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Assistência, Tratamento e Cuidado</Text></View>
+                    <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color={route.params.nivelIntervencaoColor} size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>{route.params.nivelIntervencaoName}</Text></View>
                 </View>
             </View>
 
