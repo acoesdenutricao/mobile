@@ -7,12 +7,39 @@ export default function Information({ navigation, route }) {
     const [visible, setVisible] = useState(false);
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
+    const [legenda, setLegenda] = useState([]);
+    const [sujeitoAbordagem, setSujeitoAbordagem] = useState([]);
+    const [nivelIntervencao, setNivelIntervencao] = useState([]);
 
     const containerStyle = {backgroundColor: 'white', padding: 20, margin: 15, borderRadius: 5};
 
 
     const [informacao, setInformacao] = useState([]); // lista os sujeitos da abordagem
     const [informacaoLoading, setInformacaoLoading] = useState(true); // lista os sujeitos da abordagem
+
+    //busca dados sobre o sujeito da abordagem selecionado
+    useEffect(() => {
+        let requestURL = 'http://191.252.202.56:4000/approach-subjects/' + route.params.idSujeitoAbordagem;
+        let request = new XMLHttpRequest();
+    
+        request.open('GET', requestURL);
+        request.send();
+        request.onload = function () {
+            setSujeitoAbordagem(JSON.parse(request.responseText));
+        }
+    }, [])
+
+    //busca dados sobre o nivel de intervenção selecionado
+    useEffect(() => {
+            let requestURL = 'http://191.252.202.56:4000/intervation-levels/' + route.params.idNivelIntervencao;
+            let request = new XMLHttpRequest();
+        
+            request.open('GET', requestURL);
+            request.send();
+            request.onload = function () {
+                setNivelIntervencao(JSON.parse(request.responseText));
+            }
+        }, [])
 
     //Configurações da appbar
     useEffect(() => {
@@ -70,11 +97,11 @@ Fonte do conceito: Resolução do. 380/2005 – CFN , com adaptações.</Text>
             {/*cabeçalho com dados a respeito da informação*/}
             <View style={{ backgroundColor: '#EBEDED' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="google-circles-communities" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>{route.params.sujeitoAbordagemName}</Text></View>
+                    <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon={sujeitoAbordagem.icon_name} /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>{sujeitoAbordagem.subject}</Text></View>
                     <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></View>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color={route.params.nivelIntervencaoColor} size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>{route.params.nivelIntervencaoName}</Text></View>
+                    <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color={nivelIntervencao.color} size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>{nivelIntervencao.title}</Text></View>
                 </View>
             </View>
 

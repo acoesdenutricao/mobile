@@ -34,21 +34,18 @@ export default function Home({ navigation }) {
     const [listaAcaoTemp, setListaAcaoTemp] = useState([]); // lista as acoes para o sujeito e nivel selecionados (versao temporaria da API)
 
 
-    function atualizaDadosSelecionados(sjtAbordagem, sjtAbordagemName, nvlIntervencao, nvlIntervencaoName, nvlIntervencaoColor) {
+    function atualizaDadosSelecionados(sjtAbordagem, nvlIntervencao) {
         setListaAcao([]);
         setListaAcaoTemp([]);
 
         if (sjtAbordagem != 0) {
             setSujeitoAbordagem(sjtAbordagem);
-            setSujeitoAbordagemName(sjtAbordagemName);
             if (sjtAbordagem != 0 && nivelIntervencao != 0) {
                 carregarDadosListaAcao(sjtAbordagem, nivelIntervencao);
             }
         }
         if (nvlIntervencao != 0) {
             setNivelIntervencao(nvlIntervencao);
-            setNivelIntervencaoName(nvlIntervencaoName);
-            setNivelIntervencaoColor(nvlIntervencaoColor);
             if (sujeitoAbordagem != 0 && nvlIntervencao != 0) {
                 carregarDadosListaAcao(sujeitoAbordagem, nvlIntervencao);
             }
@@ -121,7 +118,7 @@ export default function Home({ navigation }) {
                 activeOpacity={0.6}
                 underlayColor="transparent"
                 activeTextColor="white"
-                onPress={() => atualizaDadosSelecionados(props.id, props.name, 0, 0, 0)}>
+                onPress={() => atualizaDadosSelecionados(props.id, 0)}>
                 <View style={{ alignItems: 'center' }}>
                     <Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={50} icon={props.iconName} />
                     <Text>{props.text}</Text>
@@ -136,7 +133,7 @@ export default function Home({ navigation }) {
                 style={styles.buttonGridActive}
                 activeOpacity={0.6}
                 underlayColor="#3c9891"
-                onPress={() => atualizaDadosSelecionados(props.id, props.name, 0, 0, 0)}>
+                onPress={() => atualizaDadosSelecionados(props.id, 0)}>
                 <View style={{ alignItems: 'center' }}>
                     <Avatar.Icon style={{ backgroundColor: "transparent" }} color="white" size={50} icon={props.iconName} />
                     <Text style={{ color: 'white' }}>{props.text}</Text>
@@ -148,12 +145,25 @@ export default function Home({ navigation }) {
     const ButtonTextGridNivelIntervencao = (props) => {
         return (
             <TouchableHighlight
-                style={styles.buttonTextGrid}
+                style={{
+                    alignItems: 'center',
+                    borderStyle: 'solid',
+                    borderColor: props.color,
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    padding: 15,
+                    margin: 5,
+                    height: 70,
+                    alignItems: "center",
+                    flexGrow: 1,
+                    flexBasis: 0,
+                }}
+
                 activeOpacity={0.6}
                 underlayColor="transparent"
-                onPress={() => atualizaDadosSelecionados(0, 0, props.id, props.name, props.color)}>
+                onPress={() => atualizaDadosSelecionados(0, props.id)}>
                 <View style={{ alignItems: 'center' }}>
-                    <Text style={{ textAlign: 'center' }}>{props.text}</Text>
+                    <Text style={{ textAlign: 'center'}}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -162,10 +172,23 @@ export default function Home({ navigation }) {
     const ButtonTextGridNivelIntervencaoActive = (props) => {
         return (
             <TouchableHighlight
-                style={styles.buttonTextGridActive}
+                style={{
+                    alignItems: 'center',
+                    borderStyle: 'solid',
+                    borderColor: props.color,
+                    backgroundColor: props.color,
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    padding: 15,
+                    margin: 5,
+                    height: 70,
+                    alignItems: "center",
+                    flexGrow: 1,
+                    flexBasis: 0,
+                }}
                 activeOpacity={0.6}
                 underlayColor="#3c9891"
-                onPress={() => atualizaDadosSelecionados(0, 0, props.id, props.name, props.color)}>
+                onPress={() => atualizaDadosSelecionados(0, props.id)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center', color: 'white' }}>{props.text}</Text>
                 </View>
@@ -200,6 +223,7 @@ export default function Home({ navigation }) {
             </TouchableHighlight>
         );
     }
+
 
     return (
         <View style={styles.container}>
@@ -281,7 +305,6 @@ export default function Home({ navigation }) {
                 :
 
                 <ScrollView style={styles.container}>
-
                     {/* Sujeito da abordagem */}
                     <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
                     {isListaSujeitosLoading ? <ActivityIndicator size='large' /> : (
@@ -291,9 +314,9 @@ export default function Home({ navigation }) {
                             numColumns={3}
                             renderItem={({ item }) => (
                                 sujeitoAbordagem == item.id ?
-                                    <ButtonGridActive iconName='account-outline' text={item.subject} id={item.id} name={item.subject}></ButtonGridActive>
+                                    <ButtonGridActive iconName={item.icon_name} text={item.subject} id={item.id}></ButtonGridActive>
                                     :
-                                    <ButtonGrid iconName='account-outline' text={item.subject} id={item.id} name={item.subject}></ButtonGrid>
+                                    <ButtonGrid iconName={item.icon_name}  text={item.subject} id={item.id}></ButtonGrid>
 
                             )}
                         />
@@ -308,9 +331,9 @@ export default function Home({ navigation }) {
                             numColumns={2}
                             renderItem={({ item }) => (
                                 nivelIntervencao == item.id ?
-                                    <ButtonTextGridNivelIntervencaoActive text={item.title} id={item.id} name={item.title} color={item.color}></ButtonTextGridNivelIntervencaoActive>
+                                    <ButtonTextGridNivelIntervencaoActive color={item.color} text={item.title} id={item.id}></ButtonTextGridNivelIntervencaoActive>
                                     :
-                                    <ButtonTextGridNivelIntervencao text={item.title} id={item.id} name={item.title} color={item.color}></ButtonTextGridNivelIntervencao>
+                                    <ButtonTextGridNivelIntervencao color ={item.color} id={item.id}  text={item.title}></ButtonTextGridNivelIntervencao>
 
                             )}
                         />
@@ -318,6 +341,7 @@ export default function Home({ navigation }) {
 
                     {/* Selecão da ação*/}
                     <Text style={styles.gridTitle}>Selecionar Ação</Text>
+
 
                     {nivelIntervencao == 0 || sujeitoAbordagem == 0 ?
                         <Text style={{ textAlign: 'center' }}>Selecione um sujeito da abordagem e um nivel de intervenção primeiro</Text>
@@ -340,7 +364,7 @@ export default function Home({ navigation }) {
                         <Button mode="contained"
                             disabled={selectedAcao == 0}
                             onPress={() => navigation.navigate('Information',
-                                { selectedAcao: selectedAcao, sujeitoAbordagemName: sujeitoAbordagemName, nivelIntervencaoName: nivelIntervencaoName, nivelIntervencaoColor: nivelIntervencaoColor}
+                                { selectedAcao: selectedAcao, idSujeitoAbordagem: sujeitoAbordagem, idNivelIntervencao: nivelIntervencao }
                             )}>
                             Buscar
                         </Button>
