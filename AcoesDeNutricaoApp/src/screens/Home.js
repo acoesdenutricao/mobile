@@ -13,9 +13,18 @@ export default function Home({ navigation }) {
     /* Estado da tela inicial entre principal e histórico */
     const [selectedTab, setSelectedTab] = useState(0);
 
+    /* id dos dados selecionados*/
     const [sujeitoAbordagem, setSujeitoAbordagem] = useState(0); //sujeito da abordagem selecionado
     const [nivelIntervencao, setNivelIntervencao] = useState(0); // nivel de intervencao selecionado
     const [selectedAcao, setSelectedAcao] = useState(0); // acao selecionada
+
+    /* nome dos dados selecionados*/
+    const [sujeitoAbordagemName, setSujeitoAbordagemName] = useState(0); //sujeito da abordagem selecionado
+    const [nivelIntervencaoName, setNivelIntervencaoName] = useState(0); // nivel de intervencao selecionado
+    const [selectedAcaoName, setSelectedAcaoName] = useState(0); // acao selecionada
+
+    /* cor dos dados selecionados */
+    const [nivelIntervencaoColor, setNivelIntervencaoColor] = useState(0); // nivel de intervencao selecionado
 
 
     /* Armazena as listas de informações */
@@ -136,12 +145,25 @@ export default function Home({ navigation }) {
     const ButtonTextGridNivelIntervencao = (props) => {
         return (
             <TouchableHighlight
-                style={styles.buttonTextGrid}
+                style={{
+                    alignItems: 'center',
+                    borderStyle: 'solid',
+                    borderColor: props.color,
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    padding: 15,
+                    margin: 5,
+                    height: 70,
+                    alignItems: "center",
+                    flexGrow: 1,
+                    flexBasis: 0,
+                }}
+
                 activeOpacity={0.6}
                 underlayColor="transparent"
                 onPress={() => atualizaDadosSelecionados(0, props.id)}>
                 <View style={{ alignItems: 'center' }}>
-                    <Text style={{ textAlign: 'center' }}>{props.text}</Text>
+                    <Text style={{ textAlign: 'center'}}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -150,7 +172,20 @@ export default function Home({ navigation }) {
     const ButtonTextGridNivelIntervencaoActive = (props) => {
         return (
             <TouchableHighlight
-                style={styles.buttonTextGridActive}
+                style={{
+                    alignItems: 'center',
+                    borderStyle: 'solid',
+                    borderColor: props.color,
+                    backgroundColor: props.color,
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    padding: 15,
+                    margin: 5,
+                    height: 70,
+                    alignItems: "center",
+                    flexGrow: 1,
+                    flexBasis: 0,
+                }}
                 activeOpacity={0.6}
                 underlayColor="#3c9891"
                 onPress={() => atualizaDadosSelecionados(0, props.id)}>
@@ -188,6 +223,7 @@ export default function Home({ navigation }) {
             </TouchableHighlight>
         );
     }
+
 
     return (
         <View style={styles.container}>
@@ -269,7 +305,6 @@ export default function Home({ navigation }) {
                 :
 
                 <ScrollView style={styles.container}>
-
                     {/* Sujeito da abordagem */}
                     <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
                     {isListaSujeitosLoading ? <ActivityIndicator size='large' /> : (
@@ -279,9 +314,9 @@ export default function Home({ navigation }) {
                             numColumns={3}
                             renderItem={({ item }) => (
                                 sujeitoAbordagem == item.id ?
-                                    <ButtonGridActive iconName='account-outline' text={item.subject} id={item.id}></ButtonGridActive>
+                                    <ButtonGridActive iconName={item.icon_name} text={item.subject} id={item.id}></ButtonGridActive>
                                     :
-                                    <ButtonGrid iconName='account-outline' text={item.subject} id={item.id}></ButtonGrid>
+                                    <ButtonGrid iconName={item.icon_name}  text={item.subject} id={item.id}></ButtonGrid>
 
                             )}
                         />
@@ -296,9 +331,9 @@ export default function Home({ navigation }) {
                             numColumns={2}
                             renderItem={({ item }) => (
                                 nivelIntervencao == item.id ?
-                                    <ButtonTextGridNivelIntervencaoActive text={item.title} id={item.id}></ButtonTextGridNivelIntervencaoActive>
+                                    <ButtonTextGridNivelIntervencaoActive color={item.color} text={item.title} id={item.id}></ButtonTextGridNivelIntervencaoActive>
                                     :
-                                    <ButtonTextGridNivelIntervencao text={item.title} id={item.id}></ButtonTextGridNivelIntervencao>
+                                    <ButtonTextGridNivelIntervencao color ={item.color} id={item.id}  text={item.title}></ButtonTextGridNivelIntervencao>
 
                             )}
                         />
@@ -306,6 +341,7 @@ export default function Home({ navigation }) {
 
                     {/* Selecão da ação*/}
                     <Text style={styles.gridTitle}>Selecionar Ação</Text>
+
 
                     {nivelIntervencao == 0 || sujeitoAbordagem == 0 ?
                         <Text style={{ textAlign: 'center' }}>Selecione um sujeito da abordagem e um nivel de intervenção primeiro</Text>
@@ -328,7 +364,7 @@ export default function Home({ navigation }) {
                         <Button mode="contained"
                             disabled={selectedAcao == 0}
                             onPress={() => navigation.navigate('Information',
-                                { selectedAcao: selectedAcao }
+                                { selectedAcao: selectedAcao, idSujeitoAbordagem: sujeitoAbordagem, idNivelIntervencao: nivelIntervencao }
                             )}>
                             Buscar
                         </Button>
