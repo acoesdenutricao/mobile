@@ -12,6 +12,7 @@ import Favorites from './src/screens/Favorites.js';
 import Documents from './src/screens/Documents.js';
 import References from './src/screens/References.js';
 import Information from './src/screens/Information.js';
+import Login from './src/screens/Login.js';
 
 
 //Tema configs
@@ -78,6 +79,15 @@ function HomeStack() {
       <Stack.Screen name="Information" component={Information}
         options={{
           title: 'Ações Universais',
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+          headerTintColor: '#fff'
+          }} 
+        />
+      <Stack.Screen name="Login" component={Login}
+        options={{
+          title: 'Login',
           headerStyle: {
             backgroundColor: theme.colors.primary,
           },

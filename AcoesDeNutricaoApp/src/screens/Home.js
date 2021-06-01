@@ -33,6 +33,15 @@ export default function Home({ navigation }) {
     const [listaAcao, setListaAcao] = useState([]); // lista as acoes para o sujeito e nivel selecionados
     const [listaAcaoTemp, setListaAcaoTemp] = useState([]); // lista as acoes para o sujeito e nivel selecionados (versao temporaria da API)
 
+    //Configurações da appbar
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <Appbar.Action icon="login" color="white" onPress={() => navigation.navigate('Login')}/>
+            ),
+        });
+    });
+
 
     function atualizaDadosSelecionados(sjtAbordagem, nvlIntervencao) {
         setListaAcao([]);
@@ -163,7 +172,7 @@ export default function Home({ navigation }) {
                 underlayColor="transparent"
                 onPress={() => atualizaDadosSelecionados(0, props.id)}>
                 <View style={{ alignItems: 'center' }}>
-                    <Text style={{ textAlign: 'center'}}>{props.text}</Text>
+                    <Text style={{ textAlign: 'center' }}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -316,7 +325,7 @@ export default function Home({ navigation }) {
                                 sujeitoAbordagem == item.id ?
                                     <ButtonGridActive iconName={item.icon_name} text={item.subject} id={item.id}></ButtonGridActive>
                                     :
-                                    <ButtonGrid iconName={item.icon_name}  text={item.subject} id={item.id}></ButtonGrid>
+                                    <ButtonGrid iconName={item.icon_name} text={item.subject} id={item.id}></ButtonGrid>
 
                             )}
                         />
@@ -333,7 +342,7 @@ export default function Home({ navigation }) {
                                 nivelIntervencao == item.id ?
                                     <ButtonTextGridNivelIntervencaoActive color={item.color} text={item.title} id={item.id}></ButtonTextGridNivelIntervencaoActive>
                                     :
-                                    <ButtonTextGridNivelIntervencao color ={item.color} id={item.id}  text={item.title}></ButtonTextGridNivelIntervencao>
+                                    <ButtonTextGridNivelIntervencao color={item.color} id={item.id} text={item.title}></ButtonTextGridNivelIntervencao>
 
                             )}
                         />
