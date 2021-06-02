@@ -1,10 +1,13 @@
-import { ThemeProvider } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Text, TextInput, Title } from 'react-native-paper';
-
+import { Text, TextInput, Title, Button } from 'react-native-paper';
 
 export default function Login({ navigation, route }) {
+    //efetua o login (TO-DO)
+    const logar = (login, senha) => {
+        navigation.navigate('Home', {logado: true});
+    }
+
     //armazena o nome de usuário
     const [usuario, setUsuario] = useState('');
 
@@ -35,6 +38,7 @@ export default function Login({ navigation, route }) {
                 onChangeText={senha => setSenha(senha)}
             />
 
+            <Button mode="contained" onPress={() => logar(usuario, senha)}>Entrar</Button>
         </View>
     )
 }
