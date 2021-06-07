@@ -4,7 +4,6 @@ import { Avatar, Appbar, Text, Button, Card, ActivityIndicator, FAB} from 'react
 import MaterialTabs from 'react-native-material-tabs';
 
 export default function Home({ navigation, route }) {
-
     /*Informa se os dados da API já estão carregados */
     const [isListaSujeitosLoading, setListaSujeitosLoading] = useState(true);
     const [isListaNiveisIntervencaoLoading, setListaNiveisIntervencaoLoading] = useState(true);
@@ -318,6 +317,12 @@ export default function Home({ navigation, route }) {
                 :
                 
                 <View style={styles.container}>
+                    {global.login? 
+                    <Text>True</Text>
+                    :
+                    <Text>False</Text>
+                    }
+
                     <View>
                         {/* Sujeito da abordagem */}
                         <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
@@ -356,11 +361,9 @@ export default function Home({ navigation, route }) {
                         )}
                     </View>
                     
+                    {/* Selecão da ação*/}
+                    <Text style={styles.gridTitle}>Selecionar Ação</Text>
                     <ScrollView>
-                        {/* Selecão da ação*/}
-                        <Text style={styles.gridTitle}>Selecionar Ação</Text>
-
-
                         {nivelIntervencao == 0 || sujeitoAbordagem == 0 ?
                             <Text style={{ textAlign: 'center', marginVertical: 75}}>Selecione um sujeito da abordagem e um nivel de intervenção primeiro</Text>
                                 :

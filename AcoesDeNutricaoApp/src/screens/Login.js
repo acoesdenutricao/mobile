@@ -5,7 +5,8 @@ import { Text, TextInput, Title, Button } from 'react-native-paper';
 export default function Login({ navigation, route }) {
     //efetua o login (TO-DO)
     const logar = (login, senha) => {
-        navigation.navigate('Home', {logado: true});
+        global.login = true;
+        navigation.navigate('Home');
     }
 
     //armazena o nome de usuário

@@ -99,6 +99,7 @@ function HomeStack() {
 }
 
 export default function App() {
+  global.login = false;
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer>
