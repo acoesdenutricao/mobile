@@ -317,12 +317,6 @@ export default function Home({ navigation, route }) {
                 :
                 
                 <View style={styles.container}>
-                    {global.login? 
-                    <Text>True</Text>
-                    :
-                    <Text>False</Text>
-                    }
-
                     <View>
                         {/* Sujeito da abordagem */}
                         <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
