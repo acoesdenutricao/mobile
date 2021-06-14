@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, FlatList } from 'react-native';
+import { View, ScrollView, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Text, Appbar, Avatar, Button , Modal, Portal} from 'react-native-paper';
-
+import Favoritos from '../services/sqlite/Favoritos'
 
 export default function Information({ navigation, route }) {
     const [visible, setVisible] = useState(false);
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
     const [legenda, setLegenda] = useState([]);
+    const [favorito, setFavorito] = useState(false);
     const [sujeitoAbordagem, setSujeitoAbordagem] = useState([]);
     const [nivelIntervencao, setNivelIntervencao] = useState([]);
 
@@ -80,6 +81,19 @@ export default function Information({ navigation, route }) {
         }
     }, [])
 
+
+    function favoritar(){
+        if(favorito == false){
+            //create
+            Favoritos.create( {nomeSujeito: sujeitoAbordagem.subject, nomeIntervencao: nivelIntervencao.title, nomeAcao: 'Universal', idAcao:'route.params.selectedAcao', data: '14/06/2021'} )
+            .then( id => console.log('Favoritos criado com o id: '+ id) )
+            .catch( err => console.log(err))
+            setFavorito(true);
+        }
+        else{
+            setFavorito(false);
+        }
+    }
     return (
         <View style={styles.container}>
             {/*modal com as legendas*/}
@@ -98,7 +112,11 @@ Fonte do conceito: Resolução do. 380/2005 – CFN , com adaptações.</Text>
             <View style={{ backgroundColor: '#EBEDED' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon={sujeitoAbordagem.icon_name} /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>{sujeitoAbordagem.subject}</Text></View>
-                    <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></View>
+                    {favorito ? 
+                        <View style={{ flexDirection: 'row' }}><TouchableOpacity onPress={favoritar}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star" /></TouchableOpacity></View>
+                        :
+                        <View style={{ flexDirection: 'row' }}><TouchableOpacity onPress={favoritar}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></TouchableOpacity></View>
+                    }
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color={nivelIntervencao.color} size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>{nivelIntervencao.title}</Text></View>

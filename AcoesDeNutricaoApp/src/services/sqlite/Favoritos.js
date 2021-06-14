@@ -1,4 +1,4 @@
-import db from "./SQLiteDatabse";
+import db from "./SQLiteDatabase";
 
 /**
  * INICIALIZAÇÃO DA TABELA
@@ -23,7 +23,7 @@ const create = (obj) => {
     db.transaction((tx) => {
       //comando SQL modificável
       tx.executeSql(
-        "INSERT INTO favoritos (nomeSujeito, nomeIntervencao, nomeAcao, idAcao, dataText) values (?, ?, ?, ?, ?);",
+        "INSERT INTO favoritos (nomeSujeito, nomeIntervencao, nomeAcao, idAcao, data) values (?, ?, ?, ?, ?);",
         [obj.nomeSujeito, obj.nomeIntervencao, obj.nomeAcao, obj.idAcao, obj.data],
         //-----------------------
         (_, { rowsAffected, insertId }) => {
