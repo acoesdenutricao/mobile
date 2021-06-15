@@ -48,7 +48,7 @@ const update = (id, obj) => {
     db.transaction((tx) => {
       //comando SQL modificável
       tx.executeSql(
-        "UPDATE favoritos SET nomeSujeito=?, nomeIntervencao=?, nomeAcao=? idAcao=? data=? WHERE id=?;",
+        "UPDATE favoritos SET nomeSujeito=?, nomeIntervencao=?, nomeAcao=? idAcao=? data=?  WHERE id=?;",
         [obj.nomeSujeito, obj.nomeIntervencao, obj.nomeAcao, obj.idAcao, obj.data, id],
         //-----------------------
         (_, { rowsAffected }) => {
@@ -74,6 +74,31 @@ const find = (id) => {
       //comando SQL modificável
       tx.executeSql(
         "SELECT * FROM favoritos WHERE id=?;",
+        [id],
+        //-----------------------
+        (_, { rows }) => {
+          if (rows.length > 0) resolve(rows._array[0]);
+          else reject("Obj not found: id=" + id); // nenhum registro encontrado
+        },
+        (_, error) => reject(error) // erro interno em tx.executeSql
+      );
+    });
+  });
+};
+
+/**
+ * BUSCA UM REGISTRO POR MEIO DO ID DA ACAO
+ * - Recebe o ID do registro;
+ * - Retorna uma Promise:
+ *  - O resultado da Promise é o objeto (caso exista);
+ *  - Pode retornar erro (reject) caso o ID não exista ou então caso ocorra erro no SQL.
+ */
+ const findIdAcao = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      //comando SQL modificável
+      tx.executeSql(
+        "SELECT * FROM favoritos WHERE idAcao=?;",
         [id],
         //-----------------------
         (_, { rows }) => {
@@ -133,10 +158,37 @@ const remove = (id) => {
   });
 };
 
+
+/**
+ * REMOVE UM REGISTRO POR MEIO DO ID DA AÇÃO
+ * - Recebe o ID do registro;
+ * - Retorna uma Promise:
+ *  - O resultado da Promise a quantidade de registros removidos (zero indica que nada foi removido);
+ *  - Pode retornar erro (reject) caso o ID não exista ou então caso ocorra erro no SQL.
+ */
+ const removeIdAcao = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      //comando SQL modificável
+      tx.executeSql(
+        "DELETE FROM favoritos WHERE idAcao=?;",
+        [id],
+        //-----------------------
+        (_, { rowsAffected }) => {
+          resolve(rowsAffected);
+        },
+        (_, error) => reject(error) // erro interno em tx.executeSql
+      );
+    });
+  });
+};
+
 export default {
   create,
   update,
   find,
+  findIdAcao,
   all,
   remove,
+  removeIdAcao,
 };

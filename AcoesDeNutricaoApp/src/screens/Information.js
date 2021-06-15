@@ -45,6 +45,7 @@ export default function Information({ navigation, route }) {
     //Configurações da appbar
     useEffect(() => {
         navigation.setOptions({
+            title: route.params.nomeAcao,
             headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
                     <Appbar.Action icon="magnify" color="white" onPress={showModal} />
@@ -81,19 +82,45 @@ export default function Information({ navigation, route }) {
         }
     }, [])
 
+    useEffect(() => {
+        Favoritos.findIdAcao(route.params.selectedAcao)
+        .then( 
+            Favoritos => Favoritos != null? setFavorito(true) : setFavorito(false)
+          )
+    }, [])
+
+
+    //armazena a data atual
+    function getCurrentDate(){
+
+        var date = new Date().getDate();
+        var month = new Date().getMonth() + 1;
+        var year = new Date().getFullYear();
+  
+        //Alert.alert(date + '-' + month + '-' + year);
+        // You can turn it in to your desired format
+
+        if(month < 10){
+            month = "0"+month;
+        }
+        return date + '/' + month + '/' + year;//format: dd-mm-yyyy;
+    }
 
     function favoritar(){
         if(favorito == false){
             //create
-            Favoritos.create( {nomeSujeito: sujeitoAbordagem.subject, nomeIntervencao: nivelIntervencao.title, nomeAcao: 'Universal', idAcao:'route.params.selectedAcao', data: '14/06/2021'} )
+            dataAtual = getCurrentDate();
+            Favoritos.create( {nomeSujeito: sujeitoAbordagem.subject, nomeIntervencao: nivelIntervencao.title, nomeAcao:  route.params.nomeAcao, idAcao:route.params.selectedAcao, data: dataAtual} )
             .then( id => console.log('Favoritos criado com o id: '+ id) )
             .catch( err => console.log(err))
             setFavorito(true);
         }
         else{
+            Favoritos.removeIdAcao(route.params.selectedAcao);
             setFavorito(false);
         }
     }
+
     return (
         <View style={styles.container}>
             {/*modal com as legendas*/}
