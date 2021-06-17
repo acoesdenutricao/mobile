@@ -5,9 +5,8 @@ import db from "./SQLiteDatabase";
  * - Executa sempre, mas só cria a tabela caso não exista (primeira execução)
  */
 db.transaction((tx) => {
-
   tx.executeSql(
-    "CREATE TABLE IF NOT EXISTS favoritos (id INTEGER PRIMARY KEY AUTOINCREMENT, nomeSujeito TEXT, nomeIntervencao TEXT, nomeAcao TEXT, idAcao INT, data TEXT);"
+    "CREATE TABLE IF NOT EXISTS favoritos (id INTEGER PRIMARY KEY AUTOINCREMENT, nomeSujeito TEXT, nomeIntervencao TEXT, nomeAcao TEXT, idAcao INT, iconeSujeito TEXT, corIntervencao TEXT,  data TEXT);"
   );
 });
 
@@ -23,8 +22,8 @@ const create = (obj) => {
     db.transaction((tx) => {
       //comando SQL modificável
       tx.executeSql(
-        "INSERT INTO favoritos (nomeSujeito, nomeIntervencao, nomeAcao, idAcao, data) values (?, ?, ?, ?, ?);",
-        [obj.nomeSujeito, obj.nomeIntervencao, obj.nomeAcao, obj.idAcao, obj.data],
+        "INSERT INTO favoritos (nomeSujeito, nomeIntervencao, nomeAcao, idAcao, iconeSujeito, corIntervencao, data) values (?, ?, ?, ?, ?, ?, ?);",
+        [obj.nomeSujeito, obj.nomeIntervencao, obj.nomeAcao, obj.idAcao, obj.iconeSujeito, obj.corIntervencao, obj.data],
         //-----------------------
         (_, { rowsAffected, insertId }) => {
           if (rowsAffected > 0) resolve(insertId);
@@ -48,8 +47,8 @@ const update = (id, obj) => {
     db.transaction((tx) => {
       //comando SQL modificável
       tx.executeSql(
-        "UPDATE favoritos SET nomeSujeito=?, nomeIntervencao=?, nomeAcao=? idAcao=? data=?  WHERE id=?;",
-        [obj.nomeSujeito, obj.nomeIntervencao, obj.nomeAcao, obj.idAcao, obj.data, id],
+        "UPDATE favoritos SET nomeSujeito=?, nomeIntervencao=?, nomeAcao=? idAcao=?, iconeSujeito=?, corIntervencao=? data=? WHERE id=?;",
+        [obj.nomeSujeito, obj.nomeIntervencao, obj.nomeAcao, obj.idAcao, obj.iconeSujeito, obj.corIntervencao, obj.data, id],
         //-----------------------
         (_, { rowsAffected }) => {
           if (rowsAffected > 0) resolve(rowsAffected);
@@ -93,7 +92,7 @@ const find = (id) => {
  *  - O resultado da Promise é o objeto (caso exista);
  *  - Pode retornar erro (reject) caso o ID não exista ou então caso ocorra erro no SQL.
  */
- const findIdAcao = (id) => {
+const findIdAcao = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       //comando SQL modificável
@@ -166,7 +165,7 @@ const remove = (id) => {
  *  - O resultado da Promise a quantidade de registros removidos (zero indica que nada foi removido);
  *  - Pode retornar erro (reject) caso o ID não exista ou então caso ocorra erro no SQL.
  */
- const removeIdAcao = (id) => {
+const removeIdAcao = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       //comando SQL modificável
