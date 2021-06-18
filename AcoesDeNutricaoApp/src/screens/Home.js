@@ -16,6 +16,7 @@ export default function Home({ navigation, route }) {
     const [sujeitoAbordagem, setSujeitoAbordagem] = useState(0); //sujeito da abordagem selecionado
     const [nivelIntervencao, setNivelIntervencao] = useState(0); // nivel de intervencao selecionado
     const [selectedAcao, setSelectedAcao] = useState(0); // acao selecionada
+    const [selectedAcaoName, setSelectedAcaoName] = useState(0); // acao selecionada
 
     /* Armazena as listas de informações */
     const [listaSujeitoAbordagem, setListaSujeitoAbordagem] = useState([]) // lista os sujeitos da abordagem
@@ -195,7 +196,7 @@ export default function Home({ navigation, route }) {
                 style={styles.buttonTextGrid}
                 activeOpacity={0.6}
                 underlayColor="transparent"
-                onPress={() => setSelectedAcao(props.id)}>
+                onPress={() => atualizaInfoAcaoSelecionada(props.id, props.text)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center' }}>{props.text}</Text>
                 </View>
@@ -209,12 +210,18 @@ export default function Home({ navigation, route }) {
                 style={styles.buttonTextGridActive}
                 activeOpacity={0.6}
                 underlayColor="#3c9891"
-                onPress={() => setSelectedAcao(props.id)}>
+                onPress={() => atualizaInfoAcaoSelecionada(props.id, props.text)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center', color: 'white' }}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
+    }
+
+    //atualiza o nome e o id da ação que foi selecionada
+    function atualizaInfoAcaoSelecionada(id, nome){
+        setSelectedAcao(id);
+        setSelectedAcaoName(nome);
     }
 
 
@@ -361,7 +368,7 @@ export default function Home({ navigation, route }) {
                         <Button mode="contained"
                             disabled={selectedAcao == 0}
                             onPress={() => navigation.navigate('Information',
-                                { selectedAcao: selectedAcao, idSujeitoAbordagem: sujeitoAbordagem, idNivelIntervencao: nivelIntervencao }
+                                { selectedAcao: selectedAcao, nomeAcao: selectedAcaoName, idSujeitoAbordagem: sujeitoAbordagem, idNivelIntervencao: nivelIntervencao }
                             )}>
                             Buscar
                         </Button>
