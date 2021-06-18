@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, SafeAreaView, View, TouchableHighlight, ScrollView, FlatList } from 'react-native';
-import { Avatar, Appbar, Text, Button, Card, ActivityIndicator } from 'react-native-paper';
+import { Avatar, Appbar, Text, Button, Card, ActivityIndicator, FAB} from 'react-native-paper';
 import MaterialTabs from 'react-native-material-tabs';
-import { Col, Row, Grid } from "react-native-easy-grid";
 
-export default function Home({ navigation }) {
+export default function Home({ navigation, route }) {
     /*Informa se os dados da API já estão carregados */
     const [isListaSujeitosLoading, setListaSujeitosLoading] = useState(true);
     const [isListaNiveisIntervencaoLoading, setListaNiveisIntervencaoLoading] = useState(true);
@@ -13,17 +12,17 @@ export default function Home({ navigation }) {
     /* Estado da tela inicial entre principal e histórico */
     const [selectedTab, setSelectedTab] = useState(0);
 
+    /* id dos dados selecionados*/
     const [sujeitoAbordagem, setSujeitoAbordagem] = useState(0); //sujeito da abordagem selecionado
     const [nivelIntervencao, setNivelIntervencao] = useState(0); // nivel de intervencao selecionado
     const [selectedAcao, setSelectedAcao] = useState(0); // acao selecionada
-
+    const [selectedAcaoName, setSelectedAcaoName] = useState(0); // acao selecionada
 
     /* Armazena as listas de informações */
     const [listaSujeitoAbordagem, setListaSujeitoAbordagem] = useState([]) // lista os sujeitos da abordagem
     const [listaNiveisIntervencao, setListaNiveisIntervencao] = useState([]) // lista os sujeitos da abordagem
     const [listaAcao, setListaAcao] = useState([]); // lista as acoes para o sujeito e nivel selecionados
-    const [listaAcaoTemp, setListaAcaoTemp] = useState([]); // lista as acoes para o sujeito e nivel selecionados (versao temporaria da API)
-
+    const [listaAcaoTemp, setListaAcaoTemp] = useState([]); // lista as acoes para o sujeito e nivel selecionados (versao temporaria da API)S
 
     function atualizaDadosSelecionados(sjtAbordagem, nvlIntervencao) {
         setListaAcao([]);
@@ -136,12 +135,27 @@ export default function Home({ navigation }) {
     const ButtonTextGridNivelIntervencao = (props) => {
         return (
             <TouchableHighlight
-                style={styles.buttonTextGrid}
+                style={{
+                    alignItems: 'center',
+                    borderStyle: 'solid',
+                    borderColor: props.color,
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    padding: 10,
+                    margin: 5,
+                    height: 75,
+                    alignItems: "center",
+                    flexGrow: 1,
+                    flexBasis: 0,
+                    textAlignVertical: 'center',
+                    justifyContent: 'center'
+                }}
+
                 activeOpacity={0.6}
                 underlayColor="transparent"
                 onPress={() => atualizaDadosSelecionados(0, props.id)}>
                 <View style={{ alignItems: 'center' }}>
-                    <Text style={{ textAlign: 'center' }}>{props.text}</Text>
+                    <Text style={{ textAlign: 'center', textAlignVertical: 'center' }}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -150,12 +164,27 @@ export default function Home({ navigation }) {
     const ButtonTextGridNivelIntervencaoActive = (props) => {
         return (
             <TouchableHighlight
-                style={styles.buttonTextGridActive}
+                style={{
+                    alignItems: 'center',
+                    borderStyle: 'solid',
+                    borderColor: props.color,
+                    backgroundColor: props.color,
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    padding: 10,
+                    margin: 5,
+                    height: 75,
+                    alignItems: "center",
+                    flexGrow: 1,
+                    flexBasis: 0,
+                    textAlignVertical: 'center',
+                    justifyContent: 'center'
+                }}
                 activeOpacity={0.6}
                 underlayColor="#3c9891"
                 onPress={() => atualizaDadosSelecionados(0, props.id)}>
                 <View style={{ alignItems: 'center' }}>
-                    <Text style={{ textAlign: 'center', color: 'white' }}>{props.text}</Text>
+                    <Text style={{ textAlign: 'center', color: 'white', textAlignVertical: 'center' }}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -167,7 +196,7 @@ export default function Home({ navigation }) {
                 style={styles.buttonTextGrid}
                 activeOpacity={0.6}
                 underlayColor="transparent"
-                onPress={() => setSelectedAcao(props.id)}>
+                onPress={() => atualizaInfoAcaoSelecionada(props.id, props.text)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center' }}>{props.text}</Text>
                 </View>
@@ -181,13 +210,20 @@ export default function Home({ navigation }) {
                 style={styles.buttonTextGridActive}
                 activeOpacity={0.6}
                 underlayColor="#3c9891"
-                onPress={() => setSelectedAcao(props.id)}>
+                onPress={() => atualizaInfoAcaoSelecionada(props.id, props.text)}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={{ textAlign: 'center', color: 'white' }}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
     }
+
+    //atualiza o nome e o id da ação que foi selecionada
+    function atualizaInfoAcaoSelecionada(id, nome){
+        setSelectedAcao(id);
+        setSelectedAcaoName(nome);
+    }
+
 
     return (
         <View style={styles.container}>
@@ -267,73 +303,77 @@ export default function Home({ navigation }) {
                 </ScrollView>
 
                 :
-
-                <ScrollView style={styles.container}>
-
-                    {/* Sujeito da abordagem */}
-                    <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
-                    {isListaSujeitosLoading ? <ActivityIndicator size='large' /> : (
-                        <FlatList
-                            data={listaSujeitoAbordagem}
-                            keyExtractor={({ id }, index) => id.toString()}
-                            numColumns={3}
-                            renderItem={({ item }) => (
-                                sujeitoAbordagem == item.id ?
-                                    <ButtonGridActive iconName='account-outline' text={item.subject} id={item.id}></ButtonGridActive>
-                                    :
-                                    <ButtonGrid iconName='account-outline' text={item.subject} id={item.id}></ButtonGrid>
-
-                            )}
-                        />
-                    )}
-
-                    {/* Nivel de Intervencao*/}
-                    <Text style={styles.gridTitle}>Selecionar o nível de intervenção</Text>
-                    {isListaNiveisIntervencaoLoading ? <ActivityIndicator size='large' /> : (
-                        <FlatList
-                            data={listaNiveisIntervencao}
-                            keyExtractor={({ id }, index) => id.toString()}
-                            numColumns={2}
-                            renderItem={({ item }) => (
-                                nivelIntervencao == item.id ?
-                                    <ButtonTextGridNivelIntervencaoActive text={item.title} id={item.id}></ButtonTextGridNivelIntervencaoActive>
-                                    :
-                                    <ButtonTextGridNivelIntervencao text={item.title} id={item.id}></ButtonTextGridNivelIntervencao>
-
-                            )}
-                        />
-                    )}
-
-                    {/* Selecão da ação*/}
-                    <Text style={styles.gridTitle}>Selecionar Ação</Text>
-
-                    {nivelIntervencao == 0 || sujeitoAbordagem == 0 ?
-                        <Text style={{ textAlign: 'center' }}>Selecione um sujeito da abordagem e um nivel de intervenção primeiro</Text>
-                        :
-                        isListaAcoesLoading ? <ActivityIndicator size='large' /> : (
+                
+                <View style={styles.container}>
+                    <View>
+                        {/* Sujeito da abordagem */}
+                        <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
+                        {isListaSujeitosLoading ? <ActivityIndicator size='large' /> : (
                             <FlatList
-                                data={listaAcao}
+                                data={listaSujeitoAbordagem}
+                                keyExtractor={({ id }, index) => id.toString()}
+                                numColumns={3}
+                                renderItem={({ item }) => (
+                                    sujeitoAbordagem == item.id ?
+                                        <ButtonGridActive iconName={item.icon_name} text={item.subject} id={item.id}></ButtonGridActive>
+                                        :
+                                        <ButtonGrid iconName={item.icon_name} text={item.subject} id={item.id}></ButtonGrid>
+
+                                )}
+                            />
+                        )}
+                    </View>
+
+                    <View>
+                        {/* Nivel de Intervencao*/}
+                        <Text style={styles.gridTitle}>Selecionar o nível de intervenção</Text>
+                        {isListaNiveisIntervencaoLoading ? <ActivityIndicator size='large' /> : (
+                            <FlatList
+                                data={listaNiveisIntervencao}
                                 keyExtractor={({ id }, index) => id.toString()}
                                 numColumns={2}
                                 renderItem={({ item }) => (
-                                    selectedAcao == item.id ?
-                                        <ButtonTextGridAcaoActive text={item.category_name} id={item.id}></ButtonTextGridAcaoActive>
+                                    nivelIntervencao == item.id ?
+                                        <ButtonTextGridNivelIntervencaoActive color={item.color} text={item.title} id={item.id}></ButtonTextGridNivelIntervencaoActive>
                                         :
-                                        <ButtonTextGridAcao text={item.category_name} id={item.id}></ButtonTextGridAcao>
-                                )}
-                            />)
-                    }
+                                        <ButtonTextGridNivelIntervencao color={item.color} id={item.id} text={item.title}></ButtonTextGridNivelIntervencao>
 
+                                )}
+                            />
+                        )}
+                    </View>
+                    
+                    {/* Selecão da ação*/}
+                    <Text style={styles.gridTitle}>Selecionar Ação</Text>
+                    <ScrollView>
+                        {nivelIntervencao == 0 || sujeitoAbordagem == 0 ?
+                            <Text style={{ textAlign: 'center', marginVertical: 75}}>Selecione um sujeito da abordagem e um nivel de intervenção primeiro</Text>
+                                :
+                            isListaAcoesLoading ? <ActivityIndicator size='large' /> : (
+                                <FlatList
+                                    data={listaAcao}
+                                    keyExtractor={({ id }, index) => id.toString()}
+                                    numColumns={2}
+                                    renderItem={({ item }) => (
+                                        selectedAcao == item.id ?
+                                            <ButtonTextGridAcaoActive text={item.category_name} id={item.id}></ButtonTextGridAcaoActive>
+                                            :
+                                            <ButtonTextGridAcao text={item.category_name} id={item.id}></ButtonTextGridAcao>
+                                    )}
+                                />)
+                        }
+                    </ScrollView>
+                    
                     <SafeAreaView style={{ padding: 10 }}>
                         <Button mode="contained"
                             disabled={selectedAcao == 0}
                             onPress={() => navigation.navigate('Information',
-                                { selectedAcao: selectedAcao }
+                                { selectedAcao: selectedAcao, nomeAcao: selectedAcaoName, idSujeitoAbordagem: sujeitoAbordagem, idNivelIntervencao: nivelIntervencao }
                             )}>
                             Buscar
                         </Button>
                     </SafeAreaView>
-                </ScrollView>
+                </View>
             }
         </View>
     )
@@ -342,6 +382,14 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        padding: 3,
+        justifyContent: 'space-between'
+    },
+    fab: {
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 50,
     },
     card: {
         marginLeft: 10,
@@ -404,6 +452,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flexGrow: 1,
         flexBasis: 0,
+        justifyContent: 'center'
     },
 
     buttonTextGridActive: {
@@ -419,5 +468,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flexGrow: 1,
         flexBasis: 0,
+        justifyContent: 'center'
     },
 });
