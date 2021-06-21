@@ -12,6 +12,7 @@ import Favorites from './src/screens/Favorites.js';
 import Documents from './src/screens/Documents.js';
 import References from './src/screens/References.js';
 import Information from './src/screens/Information.js';
+import InformationOffline from './src/screens/InformationOffline.js';
 
 
 //Tema configs
@@ -76,6 +77,15 @@ function HomeStack() {
           }}
         />
       <Stack.Screen name="Information" component={Information}
+        options={{
+          title: 'Ações Universais',
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+          headerTintColor: '#fff'
+          }} 
+        />
+      <Stack.Screen name="InformationOffline" component={InformationOffline}
         options={{
           title: 'Ações Universais',
           headerStyle: {

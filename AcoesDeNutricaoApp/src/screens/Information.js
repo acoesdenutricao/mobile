@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Text, Appbar, Avatar, Button, Modal, Portal, ActivityIndicator } from 'react-native-paper';
 import Favoritos from '../services/sqlite/Favoritos'
 
@@ -7,17 +7,20 @@ export default function Information({ navigation, route }) {
     const [visible, setVisible] = useState(false);
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
-    const [legendaEspecifica, setLegendaEspecifica] = useState([]);
-    const [legendaGeral, setLegendaGeral] = useState([]);
     const [favorito, setFavorito] = useState(false);
     const [sujeitoAbordagem, setSujeitoAbordagem] = useState([]);
     const [nivelIntervencao, setNivelIntervencao] = useState([]);
+    const [conteudoPuro, setConteudoPuro] = useState([]);
 
     const containerStyle = { backgroundColor: 'white', padding: 20, margin: 15, borderRadius: 5 };
 
-
     const [informacao, setInformacao] = useState([]); // lista os sujeitos da abordagem
     const [informacaoLoading, setInformacaoLoading] = useState(true); // lista os sujeitos da abordagem
+
+    //armazena as legendas
+    const [legendaEspecifica, setLegendaEspecifica] = useState([]);
+    const [legendaGeral, setLegendaGeral] = useState([]);
+
 
     //busca dados sobre o sujeito da abordagem selecionado
     useEffect(() => {
@@ -67,9 +70,11 @@ export default function Information({ navigation, route }) {
             let arrayTemp = [];
             let arrayDadosSplitados = [];
             JSON.parse(request.responseText).map(function (item, indice) {
+                setConteudoPuro(item.category_information_actions.information);
                 arrayTemp = item.category_information_actions.information.split(";");
             })
 
+            
             let iterator = 0;
             arrayTemp.forEach(element => {
                 iterator++;
@@ -82,6 +87,14 @@ export default function Information({ navigation, route }) {
             setInformacao(arrayDadosSplitados);
         }
         setInformacaoLoading(false);
+    }, [])
+
+    //identifica se esse conteudo está favoritado ou não
+    useEffect(() => {
+        Favoritos.findIdAcao(route.params.selectedAcao)
+            .then(
+                Favoritos => Favoritos != null ? setFavorito(true) : setFavorito(false)
+            )
     }, [])
 
     //carrega a legenda correspondente ao conteúdo
@@ -110,17 +123,7 @@ export default function Information({ navigation, route }) {
         }
     }, [])
 
-
-    //identifica se esse conteudo está favoritado ou não
-    useEffect(() => {
-        Favoritos.findIdAcao(route.params.selectedAcao)
-            .then(
-                Favoritos => Favoritos != null ? setFavorito(true) : setFavorito(false)
-            )
-    }, [])
-
-
-    //armazena a data atual
+    //calcula a data atual
     function getCurrentDate() {
 
         var date = new Date().getDate();
@@ -139,8 +142,15 @@ export default function Information({ navigation, route }) {
     function favoritar() {
         if (favorito == false) {
             //create
-            dataAtual = getCurrentDate();
-            Favoritos.create({ nomeSujeito: sujeitoAbordagem.subject, nomeIntervencao: nivelIntervencao.title, nomeAcao: route.params.nomeAcao, idAcao: route.params.selectedAcao, iconeSujeito: sujeitoAbordagem.icon_name, corIntervencao: nivelIntervencao.color, data: dataAtual })
+            let dataAtual = getCurrentDate();
+            let legendaEsp = "";
+            let legendaGer = "";
+
+            //verifica se existe legendas, se não existir armazena uma string vazia
+            if(legendaEspecifica == []){legendaEsp = ""}
+            if(legendaGeral == []){legendaGer = ""}
+
+            Favoritos.create({ nomeSujeito: sujeitoAbordagem.subject, nomeIntervencao: nivelIntervencao.title, nomeAcao: route.params.nomeAcao, idAcao: route.params.selectedAcao, iconeSujeito: sujeitoAbordagem.icon_name, corIntervencao: nivelIntervencao.color, data: dataAtual, conteudo: conteudoPuro, legendaEspecifica: legendaEsp, legendaGeral: legendaGer})
                 .then(id => console.log('Favoritos criado com o id: ' + id))
                 .catch(err => console.log(err))
             setFavorito(true);
@@ -159,10 +169,11 @@ export default function Information({ navigation, route }) {
                     <Portal>
                         <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
                             <View style={{ flexDirection: 'row', marginLeft: -10 }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent", marginLeft: 0 }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 14, textAlignVertical: 'center', fontWeight: 'bold' }}>Assistência, Tratamento e Cuidado</Text></View>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent", marginLeft: 0 }} color={nivelIntervencao.color} size={40} icon="label" /><Text style={{ fontSize: 14, textAlignVertical: 'center', fontWeight: 'bold' }}>{nivelIntervencao.title}</Text></View>
                             </View>
-                            <Text>Identificação e avaliação do estado nutricional do usuário do SUS, elaborado com base em dados clínicos, bioquímicos, antropométricos e dietéticos, obtidos quando da avaliação nutricional e durante o acompanhamento individualizado;
-                                Fonte do conceito: Resolução do. 380/2005 – CFN , com adaptações.</Text>
+                            <View>
+                                {legendaEspecifica == [] && legendaGeral == []? <Text>Legenda disponível</Text>:<Text>Nenhuma legenda disponível para esse conteúdo atualmente.</Text>}
+                            </View>
                             <Button style={{ marginVertical: 5, alignSelf: 'flex-end', width: 100 }} mode="contained" onPress={hideModal}>OK</Button>
                         </Modal>
                     </Portal>

@@ -6,7 +6,7 @@ import db from "./SQLiteDatabase";
  */
 db.transaction((tx) => {
   tx.executeSql(
-    "CREATE TABLE IF NOT EXISTS favoritos (id INTEGER PRIMARY KEY AUTOINCREMENT, nomeSujeito TEXT, nomeIntervencao TEXT, nomeAcao TEXT, idAcao INT, iconeSujeito TEXT, corIntervencao TEXT,  data TEXT);"
+    "CREATE TABLE IF NOT EXISTS favoritos (id INTEGER PRIMARY KEY AUTOINCREMENT, nomeSujeito TEXT, nomeIntervencao TEXT, nomeAcao TEXT, idAcao INT, iconeSujeito TEXT, corIntervencao TEXT,  data TEXT, conteudo TEXT, legendaEspecifica TEXT, legendaGeral TEXT);"
   );
 });
 
@@ -22,8 +22,8 @@ const create = (obj) => {
     db.transaction((tx) => {
       //comando SQL modificável
       tx.executeSql(
-        "INSERT INTO favoritos (nomeSujeito, nomeIntervencao, nomeAcao, idAcao, iconeSujeito, corIntervencao, data) values (?, ?, ?, ?, ?, ?, ?);",
-        [obj.nomeSujeito, obj.nomeIntervencao, obj.nomeAcao, obj.idAcao, obj.iconeSujeito, obj.corIntervencao, obj.data],
+        "INSERT INTO favoritos (nomeSujeito, nomeIntervencao, nomeAcao, idAcao, iconeSujeito, corIntervencao, data, conteudo, legendaEspecifica, legendaGeral) values (?, ?, ?, ?, ?, ?, ?, ?,?,?);",
+        [obj.nomeSujeito, obj.nomeIntervencao, obj.nomeAcao, obj.idAcao, obj.iconeSujeito, obj.corIntervencao, obj.data, obj.conteudo, obj.legendaEspecifica, obj.legendaGeral],
         //-----------------------
         (_, { rowsAffected, insertId }) => {
           if (rowsAffected > 0) resolve(insertId);
@@ -48,7 +48,7 @@ const update = (id, obj) => {
       //comando SQL modificável
       tx.executeSql(
         "UPDATE favoritos SET nomeSujeito=?, nomeIntervencao=?, nomeAcao=? idAcao=?, iconeSujeito=?, corIntervencao=? data=? WHERE id=?;",
-        [obj.nomeSujeito, obj.nomeIntervencao, obj.nomeAcao, obj.idAcao, obj.iconeSujeito, obj.corIntervencao, obj.data, id],
+        [obj.nomeSujeito, obj.nomeIntervencao, obj.nomeAcao, obj.idAcao, obj.iconeSujeito, obj.corIntervencao, obj.data,  obj.conteudo, obj.legendaEspecifica, obj.legendaGeral, id],
         //-----------------------
         (_, { rowsAffected }) => {
           if (rowsAffected > 0) resolve(rowsAffected);
