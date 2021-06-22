@@ -32,7 +32,7 @@ export default function InformationOffline({ navigation, route }) {
             iterator++;
             arrayDadosSplitados.push({
                 id: iterator,
-                information: element.substr(3)
+                information: element
             })
         });
 

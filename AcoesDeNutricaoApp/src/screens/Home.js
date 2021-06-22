@@ -3,6 +3,9 @@ import { StyleSheet, SafeAreaView, View, TouchableHighlight, ScrollView, FlatLis
 import { Avatar, Appbar, Text, Button, Card, ActivityIndicator, FAB} from 'react-native-paper';
 import MaterialTabs from 'react-native-material-tabs';
 
+import Environment from '../../environment.json';
+
+
 export default function Home({ navigation, route }) {
     /*Informa se os dados da API já estão carregados */
     const [isListaSujeitosLoading, setListaSujeitosLoading] = useState(true);
@@ -44,8 +47,7 @@ export default function Home({ navigation, route }) {
 
     //carrega todas as acoes correspondentes ao sujeito e nivel selecionados
     function carregarDadosListaAcao(sjtAbordagem, nvlIntervencao) {
-        requestURL = '';
-        let requestURL = "http://191.252.202.56:4000/information/" + sjtAbordagem + "/" + nvlIntervencao + "/categories"; //Armazena link responsável pela requisicao
+        let requestURL = Environment.BASE_URL+"/information/" + sjtAbordagem + "/" + nvlIntervencao + "/categories"; //Armazena link responsável pela requisicao
         let request = new XMLHttpRequest(); //Instancia um objeto de solicitacao
         request.open('GET', requestURL);
         request.send();
@@ -73,7 +75,7 @@ export default function Home({ navigation, route }) {
 
     //busca sujeitos da abordagem
     useEffect(() => {
-        fetch('http://191.252.202.56:4000/approach-subjects', {
+        fetch(Environment.BASE_URL+'/approach-subjects', {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
@@ -87,7 +89,7 @@ export default function Home({ navigation, route }) {
 
     //busca niveis de intervencao
     useEffect(() => {
-        fetch('http://191.252.202.56:4000/intervation-levels', {
+        fetch(Environment.BASE_URL+'/intervation-levels', {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',

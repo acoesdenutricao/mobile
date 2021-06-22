@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Text, Appbar, Avatar, Button, Modal, Portal, ActivityIndicator } from 'react-native-paper';
-import Favoritos from '../services/sqlite/Favoritos'
+import Favoritos from '../services/sqlite/Favoritos';
+
+import Environment from '../../environment.json';
 
 export default function Information({ navigation, route }) {
     const [visible, setVisible] = useState(false);
@@ -24,7 +26,7 @@ export default function Information({ navigation, route }) {
 
     //busca dados sobre o sujeito da abordagem selecionado
     useEffect(() => {
-        let requestURL = 'http://191.252.202.56:4000/approach-subjects/' + route.params.idSujeitoAbordagem;
+        let requestURL = Environment.BASE_URL+'/approach-subjects/' + route.params.idSujeitoAbordagem;
         let request = new XMLHttpRequest();
 
         request.open('GET', requestURL);
@@ -36,7 +38,7 @@ export default function Information({ navigation, route }) {
 
     //busca dados sobre o nivel de intervenção selecionado
     useEffect(() => {
-        let requestURL = 'http://191.252.202.56:4000/intervation-levels/' + route.params.idNivelIntervencao;
+        let requestURL = Environment.BASE_URL+'/intervation-levels/' + route.params.idNivelIntervencao;
         let request = new XMLHttpRequest();
 
         request.open('GET', requestURL);
@@ -61,7 +63,7 @@ export default function Information({ navigation, route }) {
 
     //busca conteudo da informacao
     useEffect(() => {
-        let requestURL = 'http://191.252.202.56:4000/information/action/' + route.params.selectedAcao;
+        let requestURL = Environment.BASE_URL+'/information/action/' + route.params.selectedAcao;
         let request = new XMLHttpRequest();
 
         request.open('GET', requestURL);
@@ -80,7 +82,7 @@ export default function Information({ navigation, route }) {
                 iterator++;
                 arrayDadosSplitados.push({
                     id: iterator,
-                    information: element.substr(3)
+                    information: element
                 })
             });
 
@@ -100,7 +102,7 @@ export default function Information({ navigation, route }) {
     //carrega a legenda correspondente ao conteúdo
     useEffect(() => {
         let jsonResposta = {};
-        let requestURL = 'http://191.252.202.56:4000/actions/' + route.params.selectedAcao;
+        let requestURL = Environment.BASE_URL+'/actions/' + route.params.selectedAcao;
         let request = new XMLHttpRequest();
 
         request.open('GET', requestURL);
@@ -113,7 +115,7 @@ export default function Information({ navigation, route }) {
 
     //carrega a legenda geral
     useEffect(() => {
-        let requestURL = 'http://191.252.202.56:4000/subtitles';
+        let requestURL = Environment.BASE_URL+'/subtitles';
         let request = new XMLHttpRequest();
 
         request.open('GET', requestURL);
