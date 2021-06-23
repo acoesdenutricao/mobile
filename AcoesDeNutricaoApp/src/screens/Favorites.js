@@ -8,9 +8,14 @@ export default function Favorites({ navigation }) {
     const [listaFavoritos, setListaFavoritos] = useState([]);
     const [isListaFavoritosLoading, setListaFavoritosLoading] = useState(true);
 
+
     useEffect(() => {
-        buscaFavoritos();
-    }, [])
+        const unsubscribe = navigation.addListener('focus', () => {
+            buscaFavoritos();
+        });
+    
+        return unsubscribe;
+      }, [navigation]);
 
     function buscaFavoritos() {
         Favoritos.all()
@@ -42,7 +47,7 @@ export default function Favorites({ navigation }) {
                         <Card style={styles.card} onPress={()=>navigation.navigate('InformationOffline',{informacao: item})}>
                             <Card.Content>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon={item.iconeSujeito} /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>{item.nomeSujeito}</Text></View>
+                                    <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon={item.iconeSujeito} /><Text style={{ fontSize: 16, textAlignVertical: 'center', fontWeight: 'bold' }}>{item.nomeSujeito}</Text></View>
                                     <View style={{ flexDirection: 'row' }}><Text style={{ fontSize: 14, color: "grey", textAlignVertical: 'center' }}>{item.data}</Text><TouchableOpacity onPress={() => desfavoritar(item.id)}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star" /></TouchableOpacity></View>
                                 </View>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -65,9 +70,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     card: {
-        marginLeft: 10,
-        marginRight: 10,
-        marginTop: 5,
-        marginBottom: 5
+        marginLeft: 15,
+        marginRight: 15,
+        marginTop: 7,
+        marginBottom: 7
     },
 })

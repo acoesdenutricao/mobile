@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Text, Appbar, Avatar, Button, Modal, Portal, ActivityIndicator } from 'react-native-paper';
 import Favoritos from '../services/sqlite/Favoritos';
+import Historico from '../services/sqlite/Historico';
 
 import Environment from '../../environment.json';
 
 export default function Information({ navigation, route }) {
+
     const [visible, setVisible] = useState(false);
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
@@ -23,9 +25,8 @@ export default function Information({ navigation, route }) {
     const [legendaEspecifica, setLegendaEspecifica] = useState([]);
     const [legendaGeral, setLegendaGeral] = useState([]);
 
-
     //busca dados sobre o sujeito da abordagem selecionado
-    useEffect(() => {
+    useLayoutEffect(() => {
         let requestURL = Environment.BASE_URL+'/approach-subjects/' + route.params.idSujeitoAbordagem;
         let request = new XMLHttpRequest();
 
@@ -37,7 +38,7 @@ export default function Information({ navigation, route }) {
     }, [])
 
     //busca dados sobre o nivel de intervenção selecionado
-    useEffect(() => {
+    useLayoutEffect(() => {
         let requestURL = Environment.BASE_URL+'/intervation-levels/' + route.params.idNivelIntervencao;
         let request = new XMLHttpRequest();
 
@@ -49,7 +50,7 @@ export default function Information({ navigation, route }) {
     }, [])
 
     //Configurações da appbar
-    useEffect(() => {
+    useLayoutEffect(() => {
         navigation.setOptions({
             title: route.params.nomeAcao,
             headerRight: () => (
@@ -59,10 +60,10 @@ export default function Information({ navigation, route }) {
                 </View>
             ),
         });
-    });
+    },[]);
 
     //busca conteudo da informacao
-    useEffect(() => {
+    useLayoutEffect(() => {
         let requestURL = Environment.BASE_URL+'/information/action/' + route.params.selectedAcao;
         let request = new XMLHttpRequest();
 
@@ -89,10 +90,11 @@ export default function Information({ navigation, route }) {
             setInformacao(arrayDadosSplitados);
         }
         setInformacaoLoading(false);
+
     }, [])
 
     //identifica se esse conteudo está favoritado ou não
-    useEffect(() => {
+    useLayoutEffect(() => {
         Favoritos.findIdAcao(route.params.selectedAcao)
             .then(
                 Favoritos => Favoritos != null ? setFavorito(true) : setFavorito(false)
@@ -100,21 +102,37 @@ export default function Information({ navigation, route }) {
     }, [])
 
     //carrega a legenda correspondente ao conteúdo
-    useEffect(() => {
-        let jsonResposta = {};
+    useLayoutEffect(() => {
         let requestURL = Environment.BASE_URL+'/actions/' + route.params.selectedAcao;
         let request = new XMLHttpRequest();
 
         request.open('GET', requestURL);
         request.send();
-        request.onload = function () {
-            jsonResposta = JSON.parse(request.responseText);
+        request.onload = function () {            
+            arrayTratado = [];
+
+            JSON.parse(request.responseText).map(function (item, indice) {
+                console.log("sub"+ item.subtitles);
+                item.subtitles.map(function(item,indice){                    
+                    arrayTratado.push({
+                        id: item.id,
+                        name: item.name,
+                        meaning: item.meaning
+                    })
+                })
+            })
+
+            if(arrayTratado.length == 0){
+                setLegendaEspecifica(null)
+            }
+            else{
+                setLegendaEspecifica(arrayTratado);
+            }
         }
-        setLegendaEspecifica(jsonResposta.subtitles);
     }, [])
 
     //carrega a legenda geral
-    useEffect(() => {
+    useLayoutEffect(() => {
         let requestURL = Environment.BASE_URL+'/subtitles';
         let request = new XMLHttpRequest();
 
@@ -124,6 +142,23 @@ export default function Information({ navigation, route }) {
             setLegendaGeral(JSON.parse(request.responseText));
         }
     }, [])
+
+  useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            let dataAtual = getCurrentDate();
+            let legendaEsp = "";
+            let legendaGer = "";
+    
+            console.log(sujeitoAbordagem);
+            console.log(nivelIntervencao);
+    
+            Historico.create({ nomeSujeito: sujeitoAbordagem.subject, nomeIntervencao: nivelIntervencao.title, nomeAcao: route.params.nomeAcao, idAcao: route.params.selectedAcao, iconeSujeito: sujeitoAbordagem.icon_name, corIntervencao: nivelIntervencao.color, data: dataAtual, conteudo: conteudoPuro, legendaEspecifica: legendaEsp, legendaGeral: legendaGer})
+                .then(id => console.log('Registrado no histórico com o id: ' + id))
+                .catch(err => console.log(err))
+        });
+            return unsubscribe;
+      }, [navigation]);
+
 
     //calcula a data atual
     function getCurrentDate() {
@@ -156,25 +191,55 @@ export default function Information({ navigation, route }) {
                 .then(id => console.log('Favoritos criado com o id: ' + id))
                 .catch(err => console.log(err))
             setFavorito(true);
+
         }
         else {
             Favoritos.removeIdAcao(route.params.selectedAcao);
             setFavorito(false);
         }
     }
-
+    
     return (
         <View style={styles.container}>
             {informacaoLoading ? <View style={{ width: '100%', height: '100%', justifyContent: 'center' }}><ActivityIndicator size='large' /></View> :
                 <View style={styles.container}>
                     {/*modal com as legendas*/}
                     <Portal>
-                        <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+                        <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle} style={{alignSelf: 'center'}}>
                             <View style={{ flexDirection: 'row', marginLeft: -10 }}>
                                 <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent", marginLeft: 0 }} color={nivelIntervencao.color} size={40} icon="label" /><Text style={{ fontSize: 14, textAlignVertical: 'center', fontWeight: 'bold' }}>{nivelIntervencao.title}</Text></View>
                             </View>
                             <View>
-                                {legendaEspecifica == [] && legendaGeral == []? <Text>Legenda disponível</Text>:<Text>Nenhuma legenda disponível para esse conteúdo atualmente.</Text>}
+                                {legendaEspecifica == [] && legendaGeral == []? <Text>Nenhuma legenda disponível para esse conteúdo atualmente.</Text>:<></>}
+                                {legendaGeral != [] && legendaEspecifica == null? 
+                                <View style={{maxHeight: 500}}>
+                                                            <FlatList
+                                                            data={legendaGeral}
+                                                            keyExtractor={({ id }, index) => id.toString()}
+                                                            renderItem={({ item }) => (
+                                                                <View>
+                                                                    <Text style={{fontWeight: 'bold'}}>{item.name}</Text>
+                                                                    <Text style={styles.text}>{item.meaning}</Text>
+                                                                </View>
+                                                            )}
+                                                        /></View>
+                                                        :
+                                                        <></>
+                                
+                                }
+                                {legendaEspecifica != []? 
+                                <View style={{maxHeight: 500}}>
+                                <FlatList
+                                data={legendaEspecifica}
+                                keyExtractor={({ id }, index) => id.toString()}
+                                renderItem={({ item }) => (
+                                    <View>
+                                        <Text style={{fontWeight: 'bold'}}>{item.name}</Text>
+                                        <Text style={styles.text}>{item.meaning}</Text>
+                                    </View>
+                                )}
+                            /></View>
+                                :<></>}
                             </View>
                             <Button style={{ marginVertical: 5, alignSelf: 'flex-end', width: 100 }} mode="contained" onPress={hideModal}>OK</Button>
                         </Modal>
