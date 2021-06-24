@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, SafeAreaView, View, TouchableHighlight, ScrollView, FlatList } from 'react-native';
-import { Avatar, Appbar, Text, Button, Card, ActivityIndicator, FAB} from 'react-native-paper';
+import { Avatar, Appbar, Text, Button, Card, ActivityIndicator, FAB } from 'react-native-paper';
 import MaterialTabs from 'react-native-material-tabs';
+
+import Historico from '../services/sqlite/Historico';
+import Environment from '../config/environment.json';
+
 
 export default function Home({ navigation, route }) {
     /*Informa se os dados da API já estão carregados */
@@ -22,7 +26,9 @@ export default function Home({ navigation, route }) {
     const [listaSujeitoAbordagem, setListaSujeitoAbordagem] = useState([]) // lista os sujeitos da abordagem
     const [listaNiveisIntervencao, setListaNiveisIntervencao] = useState([]) // lista os sujeitos da abordagem
     const [listaAcao, setListaAcao] = useState([]); // lista as acoes para o sujeito e nivel selecionados
-    const [listaAcaoTemp, setListaAcaoTemp] = useState([]); // lista as acoes para o sujeito e nivel selecionados (versao temporaria da API)S
+    const [listaAcaoTemp, setListaAcaoTemp] = useState([]); // lista as acoes para o sujeito e nivel selecionados (versao temporaria da API)
+
+    const [historico, setHistorico] = useState([]);
 
     function atualizaDadosSelecionados(sjtAbordagem, nvlIntervencao) {
         setListaAcao([]);
@@ -44,8 +50,7 @@ export default function Home({ navigation, route }) {
 
     //carrega todas as acoes correspondentes ao sujeito e nivel selecionados
     function carregarDadosListaAcao(sjtAbordagem, nvlIntervencao) {
-        requestURL = '';
-        let requestURL = "http://191.252.202.56:4000/information/" + sjtAbordagem + "/" + nvlIntervencao + "/categories"; //Armazena link responsável pela requisicao
+        let requestURL = Environment.BASE_URL + "/information/" + sjtAbordagem + "/" + nvlIntervencao + "/categories"; //Armazena link responsável pela requisicao
         let request = new XMLHttpRequest(); //Instancia um objeto de solicitacao
         request.open('GET', requestURL);
         request.send();
@@ -71,9 +76,20 @@ export default function Home({ navigation, route }) {
         }
     }
 
+    useEffect(() => {
+        buscaHistorico();
+    }, [])
+
+    function buscaHistorico() {
+        Historico.all()
+            .then(
+                Historico => setHistorico(Historico)
+            )
+    }
+
     //busca sujeitos da abordagem
     useEffect(() => {
-        fetch('http://191.252.202.56:4000/approach-subjects', {
+        fetch(Environment.BASE_URL + '/approach-subjects', {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
@@ -87,7 +103,7 @@ export default function Home({ navigation, route }) {
 
     //busca niveis de intervencao
     useEffect(() => {
-        fetch('http://191.252.202.56:4000/intervation-levels', {
+        fetch(Environment.BASE_URL + '/intervation-levels', {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
@@ -111,7 +127,7 @@ export default function Home({ navigation, route }) {
                 onPress={() => atualizaDadosSelecionados(props.id, 0)}>
                 <View style={{ alignItems: 'center' }}>
                     <Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={50} icon={props.iconName} />
-                    <Text>{props.text}</Text>
+                    <Text style={{ color: "#3c9891" }}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -139,7 +155,7 @@ export default function Home({ navigation, route }) {
                     alignItems: 'center',
                     borderStyle: 'solid',
                     borderColor: props.color,
-                    borderWidth: 1,
+                    borderWidth: 2,
                     borderRadius: 4,
                     padding: 10,
                     margin: 5,
@@ -155,7 +171,7 @@ export default function Home({ navigation, route }) {
                 underlayColor="transparent"
                 onPress={() => atualizaDadosSelecionados(0, props.id)}>
                 <View style={{ alignItems: 'center' }}>
-                    <Text style={{ textAlign: 'center', textAlignVertical: 'center' }}>{props.text}</Text>
+                    <Text style={{ textAlign: 'center', textAlignVertical: 'center', color: props.color }}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -169,7 +185,7 @@ export default function Home({ navigation, route }) {
                     borderStyle: 'solid',
                     borderColor: props.color,
                     backgroundColor: props.color,
-                    borderWidth: 1,
+                    borderWidth: 2,
                     borderRadius: 4,
                     padding: 10,
                     margin: 5,
@@ -198,7 +214,7 @@ export default function Home({ navigation, route }) {
                 underlayColor="transparent"
                 onPress={() => atualizaInfoAcaoSelecionada(props.id, props.text)}>
                 <View style={{ alignItems: 'center' }}>
-                    <Text style={{ textAlign: 'center' }}>{props.text}</Text>
+                    <Text style={{ textAlign: 'center', color: "#3c9891" }}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -219,11 +235,15 @@ export default function Home({ navigation, route }) {
     }
 
     //atualiza o nome e o id da ação que foi selecionada
-    function atualizaInfoAcaoSelecionada(id, nome){
+    function atualizaInfoAcaoSelecionada(id, nome) {
         setSelectedAcao(id);
         setSelectedAcaoName(nome);
     }
 
+    function mudaTab() {
+        buscaHistorico();
+        setSelectedTab(!selectedTab);
+    }
 
     return (
         <View style={styles.container}>
@@ -232,7 +252,7 @@ export default function Home({ navigation, route }) {
                 <MaterialTabs
                     items={['Ações de Alimentação', 'Histórico']}
                     selectedIndex={selectedTab}
-                    onChange={setSelectedTab}
+                    onChange={() => mudaTab()}
                     barColor='#f1f3f2'
                     indicatorColor='#3c9891' //verde oliva
                     activeTextColor='#3c9891' //verde oliva
@@ -242,69 +262,41 @@ export default function Home({ navigation, route }) {
 
             {selectedTab == 1 ? //Se selectTab for igual a histórico
                 //Histórico
-                <ScrollView>
-                    <Card style={styles.card}>
-                        <Card.Content>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="google-circles-communities" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Comunidade</Text></View>
-                                <View style={{ flexDirection: 'row' }}><Text style={{ fontSize: 14, color: "grey", textAlignVertical: 'center' }}>03/05/2020</Text><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></View>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Assistência, Tratamento e Cuidado</Text></View>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Ações Universais</Text></View>
-                            </View>
-                        </Card.Content>
-                    </Card>
-                    {/*replicas*/}
-                    <Card style={styles.card}>
-                        <Card.Content>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="google-circles-communities" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Comunidade</Text></View>
-                                <View style={{ flexDirection: 'row' }}><Text style={{ fontSize: 14, color: "grey", textAlignVertical: 'center' }}>03/05/2020</Text><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></View>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Assistência, Tratamento e Cuidado</Text></View>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Ações Universais</Text></View>
-                            </View>
-                        </Card.Content>
-                    </Card>
-                    <Card style={styles.card}>
-                        <Card.Content>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="google-circles-communities" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Comunidade</Text></View>
-                                <View style={{ flexDirection: 'row' }}><Text style={{ fontSize: 14, color: "grey", textAlignVertical: 'center' }}>03/05/2020</Text><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></View>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Assistência, Tratamento e Cuidado</Text></View>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Ações Universais</Text></View>
-                            </View>
-                        </Card.Content>
-                    </Card>
-                    <Card style={styles.card}>
-                        <Card.Content>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="google-circles-communities" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Comunidade</Text></View>
-                                <View style={{ flexDirection: 'row' }}><Text style={{ fontSize: 14, color: "grey", textAlignVertical: 'center' }}>03/05/2020</Text><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="star-outline" /></View>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Assistência, Tratamento e Cuidado</Text></View>
-                            </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>Ações Universais</Text></View>
-                            </View>
-                        </Card.Content>
-                    </Card>
-                </ScrollView>
+                <View style={styles.container}>
+                    <FlatList
+                        data={historico}
+                        keyExtractor={({ id }, index) => id.toString()}
+                        renderItem={({ item }) => (
+                            <Card style={styles.card} onPress={() => navigation.navigate('InformationOffline', { informacao: item })}>
+                                <Card.Content>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon={item.iconeSujeito} /><Text style={{ fontSize: 16, textAlignVertical: 'center', fontWeight: 'bold' }}>{item.nomeSujeito}</Text></View>
+                                        <View style={{ flexDirection: 'row' }}><Text style={{ fontSize: 14, color: "grey", textAlignVertical: 'center' }}>{item.data}</Text></View>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color={item.corIntervencao} size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>{item.nomeIntervencao}</Text></View>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon="label" /><Text style={{ fontSize: 16, textAlignVertical: 'center' }}>{item.nomeAcao}</Text></View>
+                                    </View>
+                                </Card.Content>
+                            </Card>
+                        )}
+                    />
+                </View>
 
                 :
-                
+
                 <View style={styles.container}>
+                    {isListaNiveisIntervencaoLoading == true && isListaSujeitosLoading == true ?
+                        <View style={{ width: '100%', height: '100%', justifyContent: 'center' }}>
+                            <ActivityIndicator size='large' />
+                            <Text style={{ textAlign: 'center', color: 'red', fontSize: 20 }}>Aparentemente você está offline</Text>
+                            <Text style={{ textAlign: 'center', fontSize: 20 }}>Você pode navegar pelo conteúdo salvo em histórico e favoritos</Text>
+                        </View>
+                        :
+                        <></>
+                    }
                     <View>
                         {/* Sujeito da abordagem */}
                         <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
@@ -342,13 +334,13 @@ export default function Home({ navigation, route }) {
                             />
                         )}
                     </View>
-                    
+
                     {/* Selecão da ação*/}
                     <Text style={styles.gridTitle}>Selecionar Ação</Text>
                     <ScrollView>
                         {nivelIntervencao == 0 || sujeitoAbordagem == 0 ?
-                            <Text style={{ textAlign: 'center', marginVertical: 75}}>Selecione um sujeito da abordagem e um nivel de intervenção primeiro</Text>
-                                :
+                            <Text style={{ textAlign: 'center', marginVertical: 75 }}>Selecione um sujeito da abordagem e um nivel de intervenção primeiro</Text>
+                            :
                             isListaAcoesLoading ? <ActivityIndicator size='large' /> : (
                                 <FlatList
                                     data={listaAcao}
@@ -363,8 +355,8 @@ export default function Home({ navigation, route }) {
                                 />)
                         }
                     </ScrollView>
-                    
-                    <SafeAreaView style={{ padding: 10 }}>
+
+                    <SafeAreaView style={{ padding: 10, backgroundColor: '#EBEDED' }}>
                         <Button mode="contained"
                             disabled={selectedAcao == 0}
                             onPress={() => navigation.navigate('Information',
@@ -412,13 +404,18 @@ const styles = StyleSheet.create({
     },
     gridTitle: {
         marginTop: 10,
-        marginLeft: 15,
+        marginLeft: 10,
+        marginBottom: 10,
         alignSelf: 'flex-start',
     },
     buttonGrid: {
+        shadowOpacity: 0.75,
+        shadowRadius: 5,
+        shadowColor: 'red',
+        shadowOffset: { height: 5, width: 2 },
         borderStyle: 'solid',
         borderColor: '#3c9891',
-        borderWidth: 1,
+        borderWidth: 2,
         borderRadius: 4,
         padding: 5,
         margin: 5,
@@ -431,7 +428,7 @@ const styles = StyleSheet.create({
         borderStyle: 'solid',
         borderColor: '#3c9891',
         backgroundColor: '#3c9891',
-        borderWidth: 1,
+        borderWidth: 2,
         borderRadius: 4,
         padding: 5,
         margin: 5,
@@ -444,7 +441,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderStyle: 'solid',
         borderColor: '#3c9891',
-        borderWidth: 1,
+        borderWidth: 2,
         borderRadius: 4,
         padding: 15,
         margin: 5,
@@ -460,7 +457,7 @@ const styles = StyleSheet.create({
         borderStyle: 'solid',
         borderColor: '#3c9891',
         backgroundColor: '#3c9891',
-        borderWidth: 1,
+        borderWidth: 2,
         borderRadius: 4,
         padding: 15,
         margin: 5,
