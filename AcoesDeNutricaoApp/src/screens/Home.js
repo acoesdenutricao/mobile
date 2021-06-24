@@ -288,6 +288,15 @@ export default function Home({ navigation, route }) {
                 :
 
                 <View style={styles.container}>
+                    {isListaNiveisIntervencaoLoading == true && isListaSujeitosLoading == true ?
+                        <View style={{ width: '100%', height: '100%', justifyContent: 'center' }}>
+                            <ActivityIndicator size='large' />
+                            <Text style={{ textAlign: 'center', color: 'red', fontSize: 20 }}>Aparentemente você está offline</Text>
+                            <Text style={{ textAlign: 'center', fontSize: 20 }}>Você pode navegar pelo conteúdo salvo em histórico e favoritos</Text>
+                        </View>
+                        :
+                        <></>
+                    }
                     <View>
                         {/* Sujeito da abordagem */}
                         <Text style={styles.gridTitle}>Selecionar sujeito da Abordagem</Text>
