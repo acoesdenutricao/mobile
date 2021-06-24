@@ -1,14 +1,58 @@
-import React from 'react';
-import {SafeAreaView, View, StyleSheet} from 'react-native';
-import {Appbar, Text, Card} from 'react-native-paper';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { View, StyleSheet, FlatList, Linking } from 'react-native';
+import { Text, Card, ActivityIndicator } from 'react-native-paper';
 
-export default function References({navigation}){
-    return(
+import Environment from '../config/environment.json';
+
+export default function References({ navigation, route }) {
+    const [links, setLinks] = useState([]);
+    const [linksLoading, setLinksLoading] = useState(true);
+
+    //busca as categorias de documentos
+    useEffect(() => {
+        fetch(Environment.BASE_URL + '/' + route.params.idCategoria + '/category-external-links', {
+            method: 'GET',
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        })
+            .then((response) => response.json())
+            .then((json) => setLinks(json.category_external_links))
+            .catch((error) => console.error(error))
+            .finally(() => setLinksLoading(false));
+    }, []);
+
+    //Configurações da appbar
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            title: route.params.nomeCategoria,
+        });
+    }, []);
+
+    return (
         <View style={styles.container}>
-            <Card style={styles.card}>
-                <Card.Content><Text>BRASIL. Conselho Nacional dos Secretários de Saúde (CONASS). A gestão administrativa e financeira do SUS. Brasília, 2007. (Coleção Progestores para entender a gestão do SUS, 2).</Text></Card.Content>
-            </Card>
+            {linksLoading ?
+                <View style={{ width: '100%', height: '100%', justifyContent: 'center' }}>
+                    <ActivityIndicator size='large' />
+                </View>
+                :
+                <View>
+                    <FlatList
+                        data={links}
+                        keyExtractor={({ id }, index) => id.toString()}
+                        renderItem={({ item }) => (
+                            <Card style={styles.card} onPress={()=>Linking.openURL(item.url)}>
+                                <Card.Content>
+                                    <Text style={{fontWeight: 'bold'}}>{item.name}</Text>
+                                    <Text>{item.url}</Text>
+                                </Card.Content>
+                            </Card>
+                        )}
+                    />
+                </View>
+            }
         </View>
+
     )
 }
 
@@ -16,7 +60,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    card:{
+    card: {
         marginLeft: 10,
         marginRight: 10,
         marginTop: 5,

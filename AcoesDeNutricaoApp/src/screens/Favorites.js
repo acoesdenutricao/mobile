@@ -13,9 +13,9 @@ export default function Favorites({ navigation }) {
         const unsubscribe = navigation.addListener('focus', () => {
             buscaFavoritos();
         });
-    
+
         return unsubscribe;
-      }, [navigation]);
+    }, [navigation]);
 
     function buscaFavoritos() {
         Favoritos.all()
@@ -44,7 +44,7 @@ export default function Favorites({ navigation }) {
                     data={listaFavoritos}
                     keyExtractor={({ id }, index) => id.toString()}
                     renderItem={({ item }) => (
-                        <Card style={styles.card} onPress={()=>navigation.navigate('InformationOffline',{informacao: item})}>
+                        <Card style={styles.card} onPress={() => navigation.navigate('InformationOffline', { informacao: item })}>
                             <Card.Content>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                     <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon={item.iconeSujeito} /><Text style={{ fontSize: 16, textAlignVertical: 'center', fontWeight: 'bold' }}>{item.nomeSujeito}</Text></View>

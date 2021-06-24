@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, SafeAreaView, View, TouchableHighlight, ScrollView, FlatList } from 'react-native';
-import { Avatar, Appbar, Text, Button, Card, ActivityIndicator, FAB} from 'react-native-paper';
+import { Avatar, Appbar, Text, Button, Card, ActivityIndicator, FAB } from 'react-native-paper';
 import MaterialTabs from 'react-native-material-tabs';
 
 import Historico from '../services/sqlite/Historico';
-import Environment from '../../environment.json';
+import Environment from '../config/environment.json';
 
 
 export default function Home({ navigation, route }) {
@@ -50,7 +50,7 @@ export default function Home({ navigation, route }) {
 
     //carrega todas as acoes correspondentes ao sujeito e nivel selecionados
     function carregarDadosListaAcao(sjtAbordagem, nvlIntervencao) {
-        let requestURL = Environment.BASE_URL+"/information/" + sjtAbordagem + "/" + nvlIntervencao + "/categories"; //Armazena link responsável pela requisicao
+        let requestURL = Environment.BASE_URL + "/information/" + sjtAbordagem + "/" + nvlIntervencao + "/categories"; //Armazena link responsável pela requisicao
         let request = new XMLHttpRequest(); //Instancia um objeto de solicitacao
         request.open('GET', requestURL);
         request.send();
@@ -89,7 +89,7 @@ export default function Home({ navigation, route }) {
 
     //busca sujeitos da abordagem
     useEffect(() => {
-        fetch(Environment.BASE_URL+'/approach-subjects', {
+        fetch(Environment.BASE_URL + '/approach-subjects', {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
@@ -103,7 +103,7 @@ export default function Home({ navigation, route }) {
 
     //busca niveis de intervencao
     useEffect(() => {
-        fetch(Environment.BASE_URL+'/intervation-levels', {
+        fetch(Environment.BASE_URL + '/intervation-levels', {
             method: 'GET',
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
@@ -127,7 +127,7 @@ export default function Home({ navigation, route }) {
                 onPress={() => atualizaDadosSelecionados(props.id, 0)}>
                 <View style={{ alignItems: 'center' }}>
                     <Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={50} icon={props.iconName} />
-                    <Text style={{ color:"#3c9891" }}>{props.text}</Text>
+                    <Text style={{ color: "#3c9891" }}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -171,7 +171,7 @@ export default function Home({ navigation, route }) {
                 underlayColor="transparent"
                 onPress={() => atualizaDadosSelecionados(0, props.id)}>
                 <View style={{ alignItems: 'center' }}>
-                    <Text style={{ textAlign: 'center', textAlignVertical: 'center', color: props.color}}>{props.text}</Text>
+                    <Text style={{ textAlign: 'center', textAlignVertical: 'center', color: props.color }}>{props.text}</Text>
                 </View>
             </TouchableHighlight>
         );
@@ -235,12 +235,12 @@ export default function Home({ navigation, route }) {
     }
 
     //atualiza o nome e o id da ação que foi selecionada
-    function atualizaInfoAcaoSelecionada(id, nome){
+    function atualizaInfoAcaoSelecionada(id, nome) {
         setSelectedAcao(id);
         setSelectedAcaoName(nome);
     }
 
-    function mudaTab(){
+    function mudaTab() {
         buscaHistorico();
         setSelectedTab(!selectedTab);
     }
@@ -252,7 +252,7 @@ export default function Home({ navigation, route }) {
                 <MaterialTabs
                     items={['Ações de Alimentação', 'Histórico']}
                     selectedIndex={selectedTab}
-                    onChange={()=>mudaTab()}
+                    onChange={() => mudaTab()}
                     barColor='#f1f3f2'
                     indicatorColor='#3c9891' //verde oliva
                     activeTextColor='#3c9891' //verde oliva
@@ -267,7 +267,7 @@ export default function Home({ navigation, route }) {
                         data={historico}
                         keyExtractor={({ id }, index) => id.toString()}
                         renderItem={({ item }) => (
-                            <Card style={styles.card}  onPress={()=>navigation.navigate('InformationOffline',{informacao: item})}>
+                            <Card style={styles.card} onPress={() => navigation.navigate('InformationOffline', { informacao: item })}>
                                 <Card.Content>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                         <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent" }} color="#3c9891" size={40} icon={item.iconeSujeito} /><Text style={{ fontSize: 16, textAlignVertical: 'center', fontWeight: 'bold' }}>{item.nomeSujeito}</Text></View>
@@ -282,11 +282,11 @@ export default function Home({ navigation, route }) {
                                 </Card.Content>
                             </Card>
                         )}
-                        />
+                    />
                 </View>
 
                 :
-                
+
                 <View style={styles.container}>
                     <View>
                         {/* Sujeito da abordagem */}
@@ -325,13 +325,13 @@ export default function Home({ navigation, route }) {
                             />
                         )}
                     </View>
-                    
+
                     {/* Selecão da ação*/}
                     <Text style={styles.gridTitle}>Selecionar Ação</Text>
                     <ScrollView>
                         {nivelIntervencao == 0 || sujeitoAbordagem == 0 ?
-                            <Text style={{ textAlign: 'center', marginVertical: 75}}>Selecione um sujeito da abordagem e um nivel de intervenção primeiro</Text>
-                                :
+                            <Text style={{ textAlign: 'center', marginVertical: 75 }}>Selecione um sujeito da abordagem e um nivel de intervenção primeiro</Text>
+                            :
                             isListaAcoesLoading ? <ActivityIndicator size='large' /> : (
                                 <FlatList
                                     data={listaAcao}
@@ -346,7 +346,7 @@ export default function Home({ navigation, route }) {
                                 />)
                         }
                     </ScrollView>
-                    
+
                     <SafeAreaView style={{ padding: 10, backgroundColor: '#EBEDED' }}>
                         <Button mode="contained"
                             disabled={selectedAcao == 0}

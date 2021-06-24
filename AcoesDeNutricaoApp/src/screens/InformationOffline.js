@@ -1,7 +1,6 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Text, Appbar, Avatar, Button, Modal, Portal, ActivityIndicator } from 'react-native-paper';
-import Favoritos from '../services/sqlite/Favoritos'
 
 export default function InformationOffline({ navigation, route }) {
     const [visible, setVisible] = useState(false);
@@ -15,19 +14,19 @@ export default function InformationOffline({ navigation, route }) {
     const [informacao, setInformacao] = useState([]);
     const [conteudo, setConteudo] = useState([]);
 
-    useEffect(()=>{
+    useEffect(() => {
         setInformacao(route.params.informacao);
         carregarConteudo(route.params.informacao.conteudo);
         setInformacaoLoading(false);
-    },[])
+    }, [])
 
-    function carregarConteudo(conteudo){
+    function carregarConteudo(conteudo) {
         let arrayTemp = [];
         let arrayDadosSplitados = [];
         let iterator = 0;
 
         arrayTemp = conteudo.split(";");
-        
+
         arrayTemp.forEach(element => {
             iterator++;
             arrayDadosSplitados.push({
@@ -50,7 +49,7 @@ export default function InformationOffline({ navigation, route }) {
                                 <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent", marginLeft: 0 }} color={informacao.corIntervencao} size={40} icon="label" /><Text style={{ fontSize: 14, textAlignVertical: 'center', fontWeight: 'bold' }}>{informacao.nomeIntervencao}</Text></View>
                             </View>
                             <View>
-                                {informacao.legendaEspecifica == [] && informacao.legendaGeral == []? <Text>Legenda disponível</Text>:<Text>Nenhuma legenda disponível para esse conteúdo atualmente.</Text>}
+                                {informacao.legendaEspecifica == [] && informacao.legendaGeral == [] ? <Text>Legenda disponível</Text> : <Text>Nenhuma legenda disponível para esse conteúdo atualmente.</Text>}
                             </View>
                             <Button style={{ marginVertical: 5, alignSelf: 'flex-end', width: 100 }} mode="contained" onPress={hideModal}>OK</Button>
                         </Modal>
@@ -68,7 +67,7 @@ export default function InformationOffline({ navigation, route }) {
 
                     {/*conteudo da informação*/}
                     <View style={styles.container}>
-                        <Text style={{color: "red", textAlign: "center", marginTop: 5, marginBottom: 5}}>Esse conteúdo pode estar desatualizado</Text>
+                        <Text style={{ color: "red", textAlign: "center", marginTop: 5, marginBottom: 5 }}>Esse conteúdo pode estar desatualizado</Text>
                         <FlatList
                             data={conteudo}
                             keyExtractor={({ id }, index) => id.toString()}

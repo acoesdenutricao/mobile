@@ -48,7 +48,7 @@ const update = (id, obj) => {
       //comando SQL modificável
       tx.executeSql(
         "UPDATE favoritos SET nomeSujeito=?, nomeIntervencao=?, nomeAcao=? idAcao=?, iconeSujeito=?, corIntervencao=? data=? WHERE id=?;",
-        [obj.nomeSujeito, obj.nomeIntervencao, obj.nomeAcao, obj.idAcao, obj.iconeSujeito, obj.corIntervencao, obj.data,  obj.conteudo, obj.legendaEspecifica, obj.legendaGeral, id],
+        [obj.nomeSujeito, obj.nomeIntervencao, obj.nomeAcao, obj.idAcao, obj.iconeSujeito, obj.corIntervencao, obj.data, obj.conteudo, obj.legendaEspecifica, obj.legendaGeral, id],
         //-----------------------
         (_, { rowsAffected }) => {
           if (rowsAffected > 0) resolve(rowsAffected);
