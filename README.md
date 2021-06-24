@@ -21,7 +21,9 @@ Linux e Windows:
 * 3 - Execute o seguinte comando "npm install", este comando instalará as  dependências do projeto.
 * 4 - Para executar o projeto, ainda no terminal, execute "npm start"
 * 5 - Aguarde uma aba carregar em seu navegador com o QR-code do servidor do projeto
-* 6 - No dispositivo móvel, abra o app Expo Go, clique em "Scan QR Code" e escaneie o QR-code do servidor do projeto
+* 6 - No dispositivo móvel, abra o app Expo Go, clique em "Scan QR Code" e escaneie o QR-code do servidor do projeto (certifique-se de 
+estar conectado na mesma rede wifi que seu computador).
+
 * 7 - Feito todos os passos anteriores, o app carregará e estará em execução no seu dispositivo.
 
 ## Contribuidores
