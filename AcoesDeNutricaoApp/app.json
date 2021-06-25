@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "AcoesDeNutricaoApp",
-    "slug": "AcoesDeNutricaoApp",
+    "name": "NutriAção de Bolso",
+    "slug": "NutriAcaoDeBolso",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

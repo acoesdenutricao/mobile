@@ -123,7 +123,7 @@ const all = () => {
     db.transaction((tx) => {
       //comando SQL modificável
       tx.executeSql(
-        "SELECT * FROM favoritos;",
+        "SELECT * FROM favoritos ORDER BY id DESC;",
         [],
         //-----------------------
         (_, { rows }) => resolve(rows._array),

@@ -1,13 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect} from 'react';
 import { StyleSheet, SafeAreaView, View, TouchableHighlight, ScrollView, FlatList } from 'react-native';
-import { Avatar, Appbar, Text, Button, Card, ActivityIndicator, FAB } from 'react-native-paper';
+import { Avatar, Text, Button, Card, ActivityIndicator} from 'react-native-paper';
 import MaterialTabs from 'react-native-material-tabs';
+import NetInfo from "@react-native-community/netinfo";
+
 
 import Historico from '../services/sqlite/Historico';
 import Environment from '../config/environment.json';
 
 
 export default function Home({ navigation, route }) {
+    /*Armazena informação sobre a conexão com a Internet*/
+    const [isConnected, setConected] = useState(false);
+
     /*Informa se os dados da API já estão carregados */
     const [isListaSujeitosLoading, setListaSujeitosLoading] = useState(true);
     const [isListaNiveisIntervencaoLoading, setListaNiveisIntervencaoLoading] = useState(true);
@@ -80,6 +85,17 @@ export default function Home({ navigation, route }) {
         buscaHistorico();
     }, [])
 
+    useLayoutEffect(() => {
+        NetInfo.fetch().then(state => {
+            console.log('Connection type', state.type);
+            console.log('Is connected?', state.isConnected);
+            console.log('Is internet connected?', state.isInternetReachable);
+            if(state.isInternetReachable == true){
+                setConected(true);
+            }
+          });
+    }, [])
+
     function buscaHistorico() {
         Historico.all()
             .then(
@@ -113,8 +129,7 @@ export default function Home({ navigation, route }) {
             .then((json) => setListaNiveisIntervencao(json))
             .catch((error) => console.error(error))
             .finally(() => setListaNiveisIntervencaoLoading(false));
-    }, []
-    );
+    }, []);
 
 
     const ButtonGrid = (props) => {
@@ -288,11 +303,10 @@ export default function Home({ navigation, route }) {
                 :
 
                 <View style={styles.container}>
-                    {isListaNiveisIntervencaoLoading == true && isListaSujeitosLoading == true ?
+                    {isConnected == false ?
                         <View style={{ width: '100%', height: '100%', justifyContent: 'center' }}>
-                            <ActivityIndicator size='large' />
-                            <Text style={{ textAlign: 'center', color: 'red', fontSize: 20 }}>Aparentemente você está offline</Text>
-                            <Text style={{ textAlign: 'center', fontSize: 20 }}>Você pode navegar pelo conteúdo salvo em histórico e favoritos</Text>
+                            <Text style={{ textAlign: 'center', fontWeight:'bold', color: '#3c9891', fontSize: 20 }}>Está desconectado da Internet?</Text>
+                            <Text style={{ textAlign: 'center', fontSize: 15, marginHorizontal: 10}}>Você ainda poderá navegar pelo conteúdo salvo em histórico e favoritos</Text>
                         </View>
                         :
                         <></>
