@@ -7,7 +7,7 @@
 Antes de iniciar, certifique-se de cumprir os seguintes requisitos:
 * Você deve possuir a última versão do NodeJs
 * Um dispositivo Android (De preferência atualizado)
-* No dispositivo Android deve estar instalo o aplicativo Expo Go (Disponível na Google Play)
+* No dispositivo Android deve estar instalado o aplicativo Expo Go (Disponível na Google Play)
 
 
 ## Como executar
