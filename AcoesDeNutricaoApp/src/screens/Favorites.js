@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Touchable } from 'react-native';
-import { SafeAreaView, ScrollView, View, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { SafeAreaView, View, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { Appbar, Text, Card, Avatar, ActivityIndicator } from 'react-native-paper';
 import Favoritos from '../services/sqlite/Favoritos';
 

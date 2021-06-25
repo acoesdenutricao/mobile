@@ -7,7 +7,7 @@
 Antes de iniciar, certifique-se de cumprir os seguintes requisitos:
 * Você deve possuir a última versão do NodeJs
 * Um dispositivo Android (De preferência atualizado)
-* No dispositivo Android deve estar instalo o aplicativo Expo Go (Disponível na Google Play)
+* No dispositivo Android deve estar instalado o aplicativo Expo Go (Disponível na Google Play)
 
 
 ## Como executar
@@ -23,8 +23,17 @@ Linux e Windows:
 * 5 - Aguarde uma aba carregar em seu navegador com o QR-code do servidor do projeto
 * 6 - No dispositivo móvel, abra o app Expo Go, clique em "Scan QR Code" e escaneie o QR-code do servidor do projeto (certifique-se de 
 estar conectado na mesma rede wifi que seu computador).
-
 * 7 - Feito todos os passos anteriores, o app carregará e estará em execução no seu dispositivo.
+
+## Como gerar um APK Android
+
+* 1 - Crie uma conta no site expo.io
+* 2 - Abra um terminal e navegue até pasta raiz do projeto
+*	3 - Execute o comando "expo build:android -t apk" 
+*	4 - Faça login
+*	5 - Gere ou envie uma key store
+*	6 - Acesse o link exibido no terminal, veja o status pelo site do expo.io e aguarde a construção do APK (mantenha o terminal em execução)
+
 
 ## Contribuidores
 
