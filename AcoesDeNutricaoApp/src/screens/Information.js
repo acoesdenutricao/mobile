@@ -1,27 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect} from 'react';
+import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Text, Appbar, Avatar, Button, Modal, Portal, ActivityIndicator } from 'react-native-paper';
-import Favoritos from '../services/sqlite/Favoritos'
+import Favoritos from '../services/sqlite/Favoritos';
+import Historico from '../services/sqlite/Historico';
+
+import Environment from '../config/environment.json';
 
 export default function Information({ navigation, route }) {
+
     const [visible, setVisible] = useState(false);
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
-    const [legendaEspecifica, setLegendaEspecifica] = useState([]);
-    const [legendaGeral, setLegendaGeral] = useState([]);
     const [favorito, setFavorito] = useState(false);
     const [sujeitoAbordagem, setSujeitoAbordagem] = useState([]);
     const [nivelIntervencao, setNivelIntervencao] = useState([]);
+    const [conteudoPuro, setConteudoPuro] = useState([]);
+    const [registradoHistorico, setRegistradoHistorico] = useState(false);
 
     const containerStyle = { backgroundColor: 'white', padding: 20, margin: 15, borderRadius: 5 };
-
 
     const [informacao, setInformacao] = useState([]); // lista os sujeitos da abordagem
     const [informacaoLoading, setInformacaoLoading] = useState(true); // lista os sujeitos da abordagem
 
+    //armazena as legendas
+    const [legendaEspecifica, setLegendaEspecifica] = useState([]);
+    const [legendaGeral, setLegendaGeral] = useState([]);
+
     //busca dados sobre o sujeito da abordagem selecionado
     useEffect(() => {
-        let requestURL = 'http://191.252.202.56:4000/approach-subjects/' + route.params.idSujeitoAbordagem;
+        let requestURL = Environment.BASE_URL + '/approach-subjects/' + route.params.idSujeitoAbordagem;
         let request = new XMLHttpRequest();
 
         request.open('GET', requestURL);
@@ -33,7 +40,7 @@ export default function Information({ navigation, route }) {
 
     //busca dados sobre o nivel de intervenção selecionado
     useEffect(() => {
-        let requestURL = 'http://191.252.202.56:4000/intervation-levels/' + route.params.idNivelIntervencao;
+        let requestURL = Environment.BASE_URL + '/intervation-levels/' + route.params.idNivelIntervencao;
         let request = new XMLHttpRequest();
 
         request.open('GET', requestURL);
@@ -54,11 +61,11 @@ export default function Information({ navigation, route }) {
                 </View>
             ),
         });
-    });
+    }, []);
 
     //busca conteudo da informacao
     useEffect(() => {
-        let requestURL = 'http://191.252.202.56:4000/information/action/' + route.params.selectedAcao;
+        let requestURL = Environment.BASE_URL + '/information/action/' + route.params.selectedAcao;
         let request = new XMLHttpRequest();
 
         request.open('GET', requestURL);
@@ -67,49 +74,25 @@ export default function Information({ navigation, route }) {
             let arrayTemp = [];
             let arrayDadosSplitados = [];
             JSON.parse(request.responseText).map(function (item, indice) {
+                setConteudoPuro(item.category_information_actions.information);
                 arrayTemp = item.category_information_actions.information.split(";");
             })
+
 
             let iterator = 0;
             arrayTemp.forEach(element => {
                 iterator++;
                 arrayDadosSplitados.push({
                     id: iterator,
-                    information: element.substr(3)
+                    information: element
                 })
             });
 
             setInformacao(arrayDadosSplitados);
         }
         setInformacaoLoading(false);
+
     }, [])
-
-    //carrega a legenda correspondente ao conteúdo
-    useEffect(() => {
-        let jsonResposta = {};
-        let requestURL = 'http://191.252.202.56:4000/actions/' + route.params.selectedAcao;
-        let request = new XMLHttpRequest();
-
-        request.open('GET', requestURL);
-        request.send();
-        request.onload = function () {
-            jsonResposta = JSON.parse(request.responseText);
-        }
-        setLegendaEspecifica(jsonResposta.subtitles);
-    }, [])
-
-    //carrega a legenda geral
-    useEffect(() => {
-        let requestURL = 'http://191.252.202.56:4000/subtitles';
-        let request = new XMLHttpRequest();
-
-        request.open('GET', requestURL);
-        request.send();
-        request.onload = function () {
-            setLegendaGeral(JSON.parse(request.responseText));
-        }
-    }, [])
-
 
     //identifica se esse conteudo está favoritado ou não
     useEffect(() => {
@@ -119,8 +102,65 @@ export default function Information({ navigation, route }) {
             )
     }, [])
 
+    //carrega a legenda correspondente ao conteúdo
+    useEffect(() => {
+        let requestURL = Environment.BASE_URL + '/actions/' + route.params.selectedAcao;
+        let request = new XMLHttpRequest();
 
-    //armazena a data atual
+        request.open('GET', requestURL);
+        request.send();
+        request.onload = function () {
+            arrayTratado = [];
+
+            JSON.parse(request.responseText).map(function (item, indice) {
+                item.subtitles.map(function (item, indice) {
+                    arrayTratado.push({
+                        id: item.id,
+                        name: item.name,
+                        meaning: item.meaning
+                    })
+                })
+            })
+
+            if (arrayTratado.length == 0) {
+                setLegendaEspecifica(null)
+            }
+            else {
+                setLegendaEspecifica(arrayTratado);
+            }
+        }
+    }, [])
+
+    //carrega a legenda geral
+    useEffect(() => {
+        let requestURL = Environment.BASE_URL + '/subtitles';
+        let request = new XMLHttpRequest();
+
+        request.open('GET', requestURL);
+        request.send();
+        request.onload = function () {
+            setLegendaGeral(JSON.parse(request.responseText));
+        }
+    }, [])
+
+    useEffect(() => {
+        let dataAtual = getCurrentDate();
+        let legendaEsp = "";
+        let legendaGer = "";
+
+        console.log(sujeitoAbordagem);
+        console.log(nivelIntervencao);
+
+        if(registradoHistorico == false && sujeitoAbordagem.subject != null && nivelIntervencao.title != null){
+        Historico.create({ nomeSujeito: sujeitoAbordagem.subject, nomeIntervencao: nivelIntervencao.title, nomeAcao: route.params.nomeAcao, idAcao: route.params.selectedAcao, iconeSujeito: sujeitoAbordagem.icon_name, corIntervencao: nivelIntervencao.color, data: dataAtual, conteudo: conteudoPuro, legendaEspecifica: legendaEsp, legendaGeral: legendaGer })
+            .then(id => console.log('Registrado no histórico com o id: ' + id))
+            .catch(err => console.log(err))
+            setRegistradoHistorico(true);
+        }
+    }, [informacaoLoading, legendaEspecifica, legendaGeral]);
+
+
+    //calcula a data atual
     function getCurrentDate() {
 
         var date = new Date().getDate();
@@ -139,11 +179,19 @@ export default function Information({ navigation, route }) {
     function favoritar() {
         if (favorito == false) {
             //create
-            dataAtual = getCurrentDate();
-            Favoritos.create({ nomeSujeito: sujeitoAbordagem.subject, nomeIntervencao: nivelIntervencao.title, nomeAcao: route.params.nomeAcao, idAcao: route.params.selectedAcao, iconeSujeito: sujeitoAbordagem.icon_name, corIntervencao: nivelIntervencao.color, data: dataAtual })
+            let dataAtual = getCurrentDate();
+            let legendaEsp = "";
+            let legendaGer = "";
+
+            //verifica se existe legendas, se não existir armazena uma string vazia
+            if (legendaEspecifica == []) { legendaEsp = "" }
+            if (legendaGeral == []) { legendaGer = "" }
+
+            Favoritos.create({ nomeSujeito: sujeitoAbordagem.subject, nomeIntervencao: nivelIntervencao.title, nomeAcao: route.params.nomeAcao, idAcao: route.params.selectedAcao, iconeSujeito: sujeitoAbordagem.icon_name, corIntervencao: nivelIntervencao.color, data: dataAtual, conteudo: conteudoPuro, legendaEspecifica: legendaEsp, legendaGeral: legendaGer })
                 .then(id => console.log('Favoritos criado com o id: ' + id))
                 .catch(err => console.log(err))
             setFavorito(true);
+
         }
         else {
             Favoritos.removeIdAcao(route.params.selectedAcao);
@@ -157,12 +205,42 @@ export default function Information({ navigation, route }) {
                 <View style={styles.container}>
                     {/*modal com as legendas*/}
                     <Portal>
-                        <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+                        <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle} style={{ alignSelf: 'center' }}>
                             <View style={{ flexDirection: 'row', marginLeft: -10 }}>
-                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent", marginLeft: 0 }} color="#b393cb" size={40} icon="label" /><Text style={{ fontSize: 14, textAlignVertical: 'center', fontWeight: 'bold' }}>Assistência, Tratamento e Cuidado</Text></View>
+                                <View style={{ flexDirection: 'row' }}><Avatar.Icon style={{ backgroundColor: "transparent", marginLeft: 0 }} color={nivelIntervencao.color} size={40} icon="label" /><Text style={{ fontSize: 14, textAlignVertical: 'center', fontWeight: 'bold' }}>{nivelIntervencao.title}</Text></View>
                             </View>
-                            <Text>Identificação e avaliação do estado nutricional do usuário do SUS, elaborado com base em dados clínicos, bioquímicos, antropométricos e dietéticos, obtidos quando da avaliação nutricional e durante o acompanhamento individualizado;
-                                Fonte do conceito: Resolução do. 380/2005 – CFN , com adaptações.</Text>
+                            <View>
+                                {legendaEspecifica == [] && legendaGeral == [] ? <Text>Nenhuma legenda disponível para esse conteúdo atualmente.</Text> : <></>}
+                                {legendaGeral != [] && legendaEspecifica == null ?
+                                    <View style={{ maxHeight: 500 }}>
+                                        <FlatList
+                                            data={legendaGeral}
+                                            keyExtractor={({ id }, index) => id.toString()}
+                                            renderItem={({ item }) => (
+                                                <View>
+                                                    <Text style={{ fontWeight: 'bold' }}>{item.name}</Text>
+                                                    <Text style={styles.text}>{item.meaning}</Text>
+                                                </View>
+                                            )}
+                                        /></View>
+                                    :
+                                    <></>
+
+                                }
+                                {legendaEspecifica != [] ?
+                                    <View style={{ maxHeight: 500 }}>
+                                        <FlatList
+                                            data={legendaEspecifica}
+                                            keyExtractor={({ id }, index) => id.toString()}
+                                            renderItem={({ item }) => (
+                                                <View>
+                                                    <Text style={{ fontWeight: 'bold' }}>{item.name}</Text>
+                                                    <Text style={styles.text}>{item.meaning}</Text>
+                                                </View>
+                                            )}
+                                        /></View>
+                                    : <></>}
+                            </View>
                             <Button style={{ marginVertical: 5, alignSelf: 'flex-end', width: 100 }} mode="contained" onPress={hideModal}>OK</Button>
                         </Modal>
                     </Portal>

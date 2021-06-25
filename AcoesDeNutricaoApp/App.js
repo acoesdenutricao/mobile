@@ -12,6 +12,7 @@ import Favorites from './src/screens/Favorites.js';
 import Documents from './src/screens/Documents.js';
 import References from './src/screens/References.js';
 import Information from './src/screens/Information.js';
+import InformationOffline from './src/screens/InformationOffline.js';
 
 
 //Tema configs
@@ -68,7 +69,7 @@ function HomeStack() {
       }>
       <Stack.Screen name="Home" component={Home}
         options={{
-          title: 'Ações Universais',
+          title: 'NutriAção de Bolso',
           headerStyle: {
             backgroundColor: theme.colors.primary,
           },
@@ -76,6 +77,15 @@ function HomeStack() {
           }}
         />
       <Stack.Screen name="Information" component={Information}
+        options={{
+          title: 'Ações Universais',
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+          headerTintColor: '#fff'
+          }} 
+        />
+      <Stack.Screen name="InformationOffline" component={InformationOffline}
         options={{
           title: 'Ações Universais',
           headerStyle: {
@@ -93,12 +103,12 @@ export default function App() {
     <PaperProvider theme={theme}>
       <NavigationContainer>
         <Tab.Navigator
-          initialRouteName="Ações de Nutrição"
+          initialRouteName="NutriAção de Bolso"
           screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
+            tabBarIcon: ({ focused, color, size}) => {
               let iconName;
 
-              if (route.name === 'Ações de Nutrição') {
+              if (route.name === 'NutriAção de Bolso') {
                 iconName = focused
                   ? 'clipboard'
                   : 'clipboard';
@@ -119,10 +129,17 @@ export default function App() {
           tabBarOptions={{
             activeTintColor: '#3c9891',
             inactiveTintColor: 'gray',
+            style:{
+              height: 60,
+              paddingBottom: 5,
+            },
+            labelStyle: {
+              fontSize: 12,
+            },
           }}
         >
           <Tab.Screen name="Favoritos" component={Favorites} />
-          <Tab.Screen name="Ações de Nutrição" component={HomeStack} />
+          <Tab.Screen name="NutriAção de Bolso" component={HomeStack} />
           <Tab.Screen name="Documentos" component={DocumentsStack} />
         </Tab.Navigator>
       </NavigationContainer>
@@ -133,9 +150,9 @@ export default function App() {
 //configurações da app bar geral
 function CustomNavigationBar({ navigation, previous }) {
   return (
-    <Appbar.Header>
+    <Appbar.Header >
       {previous ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
-      <Appbar.Content title="Ações de Nutrição" />
+      <Appbar.Content title="NutriAção de Bolso" />
     </Appbar.Header>
   );
 }
